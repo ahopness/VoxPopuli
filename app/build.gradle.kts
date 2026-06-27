@@ -4,7 +4,7 @@ plugins {
 
     id("com.google.devtools.ksp")
     id("com.google.dagger.hilt.android")
-    kotlin("plugin.serialization") version "2.0.21"
+    id("org.jetbrains.kotlin.plugin.serialization") version "2.4.0"
 }
 
 android {
@@ -60,6 +60,11 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     debugImplementation(libs.androidx.compose.ui.tooling)
 
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.11.0")
+
+    implementation("io.github.pdvrieze.xmlutil:core:1.0.0-rc3")
+    implementation("io.github.pdvrieze.xmlutil:serialization:1.0.0-rc3")
+
     val room_version = "2.8.4"
     implementation("androidx.room:room-runtime:${room_version}")
     ksp("androidx.room:room-compiler:$room_version")
@@ -67,7 +72,16 @@ dependencies {
 
     implementation("com.google.dagger:hilt-android:2.60")
     ksp("com.google.dagger:hilt-android-compiler:2.60")
+    implementation("androidx.hilt:hilt-navigation-compose:1.3.0")
+
+    implementation("androidx.datastore:datastore:1.2.1")
+
+    implementation(platform("com.squareup.okhttp3:okhttp-bom:5.4.0"))
+    implementation("com.squareup.okhttp3:okhttp")
+    implementation("com.squareup.okhttp3:logging-interceptor")
 
     implementation("io.coil-kt.coil3:coil-compose:3.5.0")
     implementation("io.coil-kt.coil3:coil-network-okhttp:3.5.0")
+
+    implementation("com.google.mediapipe:tasks-text:latest.release")
 }

@@ -6,7 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import dagger.hilt.android.AndroidEntryPoint
 import dev.lucasangelo.voxpopuli.ui.VoxPopuliTheme
-import dev.lucasangelo.voxpopuli.ui.theme.AppScreen
+import dev.lucasangelo.voxpopuli.ui.theme.App
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -15,7 +15,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             VoxPopuliTheme {
-                AppScreen()
+                App()
             }
         }
     }
