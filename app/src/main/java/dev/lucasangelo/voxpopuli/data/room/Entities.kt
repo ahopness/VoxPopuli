@@ -46,7 +46,7 @@ enum class SourceCategory {
         )
     ],
     indices = [
-        Index(value = ["sourceId", "createdAt"]),
+        Index(value = ["sourceId", "publishedAt"]),
         Index("bookmarked"),
     ]
 )

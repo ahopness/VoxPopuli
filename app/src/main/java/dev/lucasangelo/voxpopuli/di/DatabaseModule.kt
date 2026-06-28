@@ -9,6 +9,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import dev.lucasangelo.voxpopuli.data.room.AppDao
 import dev.lucasangelo.voxpopuli.data.room.AppDatabase
+import dev.lucasangelo.voxpopuli.data.room.Converters
 import javax.inject.Singleton
 
 @Module

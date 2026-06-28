@@ -3,16 +3,17 @@ plugins {
     alias(libs.plugins.kotlin.compose)
 
     id("com.google.devtools.ksp")
+    id("androidx.room")
     id("com.google.dagger.hilt.android")
+
     id("org.jetbrains.kotlin.plugin.serialization") version "2.4.0"
+//    kotlin("plugin.serialization") version "2.0.21"
 }
 
 android {
     namespace = "dev.lucasangelo.voxpopuli"
     compileSdk {
-        version = release(36) {
-            minorApiLevel = 1
-        }
+        version = release(37)
     }
 
     defaultConfig {
@@ -40,6 +41,10 @@ android {
     }
     buildFeatures {
         compose = true
+    }
+
+    room {
+        schemaDirectory("$projectDir/schemas")
     }
 }
 
@@ -83,5 +88,7 @@ dependencies {
     implementation("io.coil-kt.coil3:coil-compose:3.5.0")
     implementation("io.coil-kt.coil3:coil-network-okhttp:3.5.0")
 
-    implementation("com.google.mediapipe:tasks-text:latest.release")
+    implementation("com.google.mediapipe:tasks-text:0.10.35")
+
+    implementation("io.github.kdroidfilter:composemediaplayer:0.10.0")
 }

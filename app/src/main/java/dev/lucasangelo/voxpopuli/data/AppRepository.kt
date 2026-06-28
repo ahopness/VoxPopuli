@@ -40,14 +40,14 @@ class AppRepository @Inject constructor(
     val profile: Flow<Profile> = profileDataStore.data
     suspend fun updateProfile(profile: Profile) = profileDataStore.updateData { profile }
 
-    suspend fun insertSource(source: SourceEntity): Long = dao.insertSource(source)
+    suspend fun insertSource(source: SourceEntity) = dao.insertSource(source)
     suspend fun getSource(sourceId: Long): SourceEntity  = dao.getSource(sourceId)
     fun getAllSources(): Flow<List<SourceEntity>>  = dao.getAllSources()
     suspend fun getAllSourcesNow(): List<SourceEntity>  = dao.getAllSourcesNow()
     suspend fun deleteSource(source: SourceEntity) = dao.deleteSource(source)
     suspend fun updateSource(source: SourceEntity) = dao.updateSource(source)
 
-    suspend fun insertPost(post: PostEntity): Int {
+    suspend fun insertPost(post: PostEntity) {
         val id = post.title.hashCode()
 
         val offsetDateTime = OffsetDateTime.parse(
@@ -62,7 +62,7 @@ class AppRepository @Inject constructor(
             .floatEmbedding()
             .toList()
 
-        return dao.insertPost(
+        dao.insertPost(
             post.copy(
                 id = id,
                 publishedAt = offsetDateTime.toInstant(),

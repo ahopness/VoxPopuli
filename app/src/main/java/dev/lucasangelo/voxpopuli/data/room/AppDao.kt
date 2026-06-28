@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface AppDao {
     @Insert
-    suspend fun insertSource(source: SourceEntity): Long
+    suspend fun insertSource(source: SourceEntity)
     @Query("SELECT * FROM SourceEntity WHERE id = :sourceId")
     suspend fun getSource(sourceId: Long): SourceEntity
     @Query("SELECT * FROM SourceEntity")
@@ -24,12 +24,12 @@ interface AppDao {
     suspend fun updateSource(source: SourceEntity)
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertPost(post: PostEntity): Int
+    suspend fun insertPost(post: PostEntity)
     @Query( value =
         "SELECT * FROM PostEntity " +
-                "INNER JOIN  SourceEntity on SourceEntity.id = PostEntity.sourceId " +
-                "WHERE SourceEntity.muted = 0 " +
-                "AND PostEntity.bookmarked = 1 "
+        "INNER JOIN  SourceEntity on SourceEntity.id = PostEntity.sourceId " +
+        "WHERE SourceEntity.muted = 0 " +
+        "AND PostEntity.bookmarked = 1 "
     )
     fun getAllBookmarkedPosts(): Flow<List<PostEntity>>
     @Query( value =
@@ -54,9 +54,9 @@ interface AppDao {
     fun getAllPostsIn(category: SourceCategory): Flow<List<PostEntity>>
     @Query( value =
         "SELECT * FROM PostEntity " +
-                "INNER JOIN  SourceEntity on SourceEntity.id = PostEntity.sourceId " +
-                "WHERE SourceEntity.muted = 0 " +
-                "AND SourceEntity.id = :sourceId "
+        "INNER JOIN  SourceEntity on SourceEntity.id = PostEntity.sourceId " +
+        "WHERE SourceEntity.muted = 0 " +
+        "AND SourceEntity.id = :sourceId "
     )
     fun getAllPostsBy(sourceId: Long): Flow<List<PostEntity>>
     @Delete

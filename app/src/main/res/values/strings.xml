@@ -1,3 +1,18 @@
 <resources>
     <string name="app_name">Vox Populi</string>
+    <string name="go_back">Go Back</string>
+    <string name="feed_settings">Settings</string>
+    <string name="feed_bookmarks">Bookmarks</string>
+    <string name="feed_curated">For You</string>
+    <string name="feed_new">Upcoming</string>
+    <string name="category_general">General</string>
+    <string name="category_entertainment">Entertainment</string>
+    <string name="category_gaming">Gaming</string>
+    <string name="category_technology">Technology</string>
+    <string name="category_programming">Programming</string>
+    <string name="category_business">Business</string>
+    <string name="category_science">Science</string>
+    <string name="category_sports">Sports</string>
+    <string name="category_fashion">Fashion</string>
+    <string name="category_politics">Politics</string>
 </resources>

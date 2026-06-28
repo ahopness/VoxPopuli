@@ -15,6 +15,8 @@ import dev.lucasangelo.voxpopuli.data.AppRepository
 import dev.lucasangelo.voxpopuli.data.datastore.Profile
 import dev.lucasangelo.voxpopuli.data.room.PostEntity
 import dev.lucasangelo.voxpopuli.data.room.SourceCategory
+import dev.lucasangelo.voxpopuli.data.room.SourceEntity
+import dev.lucasangelo.voxpopuli.ui.screen.home.FeedType
 import dev.lucasangelo.voxpopuli.util.cosineSimilarity
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -33,16 +35,15 @@ class FeedViewModel @AssistedInject constructor(
     private val repository: AppRepository,
     @Assisted val type: FeedType,
     @Assisted val customCategory: SourceCategory,
-    @Assisted val customSourceId: Long,
+    @Assisted val customSource: SourceEntity?,
 ) : ViewModel() {
     @AssistedFactory interface Factory {
         fun create(
             type: FeedType,
             customCategory: SourceCategory = SourceCategory.GENERAL,
-            customSourceId: Long = 0L
+            customSource: SourceEntity? = null
         ) : FeedViewModel
     }
-    enum class FeedType { BOOKMARKS, CURATED, NEW, CATEGORY, SOURCE }
 
     val feed: StateFlow<List<PostEntity>> =
         when(type) {
@@ -50,7 +51,7 @@ class FeedViewModel @AssistedInject constructor(
             FeedType.CURATED -> repository.getAllPosts()
             FeedType.NEW -> repository.getAllNewPosts()
             FeedType.CATEGORY -> repository.getAllPostsIn(customCategory)
-            FeedType.SOURCE -> repository.getAllPostsBy(customSourceId)
+            FeedType.SOURCE -> repository.getAllPostsBy(customSource!!.id)
         }
         .map {
             if (type == FeedType.CURATED)
@@ -116,7 +117,7 @@ class FeedViewModel @AssistedInject constructor(
                 }
                 FeedType.SOURCE -> {
                     repository.fetchSource(
-                        repository.getSource(customSourceId)
+                        repository.getSource(customSource!!.id)
                     )
                 }
             }
