@@ -143,14 +143,18 @@ class FeedViewModel @AssistedInject constructor(
         }
     }
 
-    fun onProfileInteraction(postEntity: PostEntity) = viewModelScope.launch {
+    fun onProfileInteraction(post: PostEntity) = viewModelScope.launch {
         val alpha = 0.1f
 
         val u = profile.value.embedding.map { it * (1f - alpha) }
-        val v = postEntity.embedding.map { it * alpha }
+        val v = post.embedding.map { it * alpha }
 
         repository.updateProfile(profile.value.copy(
             embedding = u + v
         ))
+    }
+
+    fun bookmarkPost(post: PostEntity) = viewModelScope.launch {
+        repository.updatePost(post.copy(bookmarked = !post.bookmarked))
     }
 }

@@ -189,7 +189,10 @@ fun FeedScreen(
                                     .border(
                                         border = BorderStroke(width = 1.dp, color = Color.Gray),
                                         shape = RoundedCornerShape(6.dp)
-                                    )
+                                    ),
+                                onBookmarked = {
+                                    viewModel.bookmarkPost(post)
+                                }
                             )
                     }
 
@@ -203,7 +206,8 @@ fun FeedScreen(
 fun Post(
     post: PostEntity,
     source: SourceEntity,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onBookmarked: (PostEntity) -> Unit
 ) {
     Box(
         modifier = modifier.fillMaxWidth()
@@ -284,11 +288,16 @@ fun Post(
                     )
 
                 Icon(
-                    painter = painterResource(R.drawable.icon_bookmark),
+                    painter =
+                        if (post.bookmarked)
+                            painterResource(R.drawable.icon_bookmarked)
+                        else
+                            painterResource(R.drawable.icon_bookmark),
                     contentDescription = stringResource(R.string.bookmark_post),
                     modifier = Modifier
                         .offset(x = (16).dp)
                         .height(54.dp)
+                        .clickable(onClick = { onBookmarked(post) })
                 )
             }
         }
