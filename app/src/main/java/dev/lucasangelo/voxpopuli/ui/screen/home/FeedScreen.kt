@@ -18,17 +18,22 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -73,7 +78,7 @@ fun FeedScreen(
     customCategory: SourceCategory? = null,
     customSource: SourceEntity? = null,
     viewModel: FeedViewModel = hiltViewModel(
-        key = remember(type, customCategory, customSource) {
+        key = rememberSaveable(type, customCategory, customSource) {
             when (type) {
                 FeedType.BOOKMARKS -> "feed_bookmarks"
                 FeedType.CURATED -> "feed_curated"
@@ -87,8 +92,6 @@ fun FeedScreen(
         }
     )
 ) {
-    LaunchedEffect(Unit) { viewModel.requestFeedUpdate() }
-
     val listState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
     CleanScaffold(
@@ -147,30 +150,21 @@ fun FeedScreen(
         val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
         val feed by viewModel.feed.collectAsStateWithLifecycle()
 
-        LazyColumn(
-            state = listState,
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            modifier = Modifier.fillMaxSize(),
+        PullToRefreshBox(
+            isRefreshing = isLoading,
+            onRefresh = { viewModel.requestFeedUpdate(false) }
         ) {
-            item { Spacer(Modifier.height(floatingExtendedTopBarPadding + 16.dp)) }
+            LazyColumn(
+                state = listState,
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                modifier = Modifier.fillMaxSize(),
+            ) {
+                item { Spacer(Modifier.height(floatingExtendedTopBarPadding + 16.dp)) }
 
-            if (isLoading)
-                item {
-                    Text(
-                        text = stringResource(R.string.thinking),
-                        color = Color.Gray,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier
-                            .padding(horizontal = 48.dp)
-                            .padding(top = 128.dp)
-                            .fillMaxWidth(),
-                    )
-                }
-            else
-                if(feed.isEmpty())
+                if (isLoading)
                     item {
                         Text(
-                            text = stringResource(R.string.feed_empty),
+                            text = stringResource(R.string.thinking),
                             color = Color.Gray,
                             textAlign = TextAlign.Center,
                             modifier = Modifier
@@ -180,28 +174,43 @@ fun FeedScreen(
                         )
                     }
                 else
-                    items(feed, key = { it.id }) { post ->
-                        val source = sources[post.sourceId] //NOTE: causes NullPointerException sometimes, idk why, prob race condition
-
-                        if (source != null)
-                            Post(
-                                post,
-                                source,
-                                Modifier
-                                    .padding(horizontal = 12.dp)
-                                    .clip(RoundedCornerShape(6.dp))
-                                    .border(
-                                        border = BorderStroke(width = 1.dp, color = Color.Gray),
-                                        shape = RoundedCornerShape(6.dp)
-                                    ),
-                                onBookmarked = {
-                                    viewModel.bookmarkPost(post)
-                                }
+                    if (feed.isEmpty())
+                        item {
+                            Text(
+                                text = stringResource(R.string.feed_empty),
+                                color = Color.Gray,
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier
+                                    .padding(horizontal = 48.dp)
+                                    .padding(top = 128.dp)
+                                    .fillMaxWidth(),
                             )
-                    }
+                        }
+                    else
+                        items(feed, key = { it.id }) { post ->
+                            val source =
+                                sources[post.sourceId] //NOTE: causes NullPointerException sometimes, idk why, prob race condition
+
+                            if (source != null)
+                                Post(
+                                    post,
+                                    source,
+                                    Modifier
+                                        .padding(horizontal = 12.dp)
+                                        .clip(RoundedCornerShape(6.dp))
+                                        .border(
+                                            border = BorderStroke(width = 1.dp, color = Color.Gray),
+                                            shape = RoundedCornerShape(6.dp)
+                                        ),
+                                    onBookmarked = {
+                                        viewModel.bookmarkPost(post)
+                                    }
+                                )
+                        }
 
 
-            item { Spacer(Modifier.height(floatingNavigationBarPadding + 32.dp)) }
+                item { Spacer(Modifier.height(floatingNavigationBarPadding + 32.dp)) }
+            }
         }
     }
 }
@@ -243,9 +252,11 @@ fun Post(
             )
             Box(Modifier
                 .fillMaxSize()
-                .background(Brush.horizontalGradient(
-                    colors = listOf(Color.Black, Color.Transparent)
-                ) )
+                .background(
+                    Brush.horizontalGradient(
+                        colors = listOf(Color.Black, Color.Transparent)
+                    )
+                )
             )
         }
 
@@ -275,7 +286,10 @@ fun Post(
 
             Spacer(Modifier.height(24.dp))
 
-            Text(post.title)
+            Text(
+                text = post.title,
+                modifier = Modifier.fillMaxWidth()
+            )
 
             Spacer(Modifier.height(8.dp))
 

@@ -43,6 +43,7 @@ fun HomeScreen(
 
         val settingsTab = remember {
             HomeTabItem(
+                id = "settings",
                 icon = R.drawable.icon_settings,
                 title = R.string.feed_settings,
                 destination = { SettingsScreen() }
@@ -50,6 +51,7 @@ fun HomeScreen(
         }
         val standardTabList = remember(sourcesMap) {
             feedTypeMetas.map { HomeTabItem(
+                    id = "standard_${it.key.name}",
                     icon = it.value.first,
                     title = it.value.second,
                     destination = { FeedScreen(
@@ -60,6 +62,7 @@ fun HomeScreen(
         }
         val categoryTabList = remember(sourcesMap) {
             sourceCategoryMetas.map { HomeTabItem(
+                    id= "category_${it.key.name}",
                     icon = it.value.first,
                     title = it.value.second,
                     destination = { FeedScreen(
@@ -71,6 +74,7 @@ fun HomeScreen(
         }
         val sourceTabList = remember(sourcesList) {
             sourcesList.map { HomeTabItem(
+                id = "source_${it.id}",
                 icon = it.logoUrl,
                 title = it.name,
                 destination = { FeedScreen(
@@ -94,6 +98,7 @@ fun HomeScreen(
         )
         HorizontalPager(
             pagerState,
+            key = { tabList[it].id },
             modifier = Modifier.fillMaxSize()
         ) { page ->
             tabList[page].destination()
@@ -116,6 +121,7 @@ fun HomeScreen(
     }
 }
 data class HomeTabItem(
+    val id: String,
     val icon: Any,
     val title: Any,
     val destination: @Composable () -> Unit

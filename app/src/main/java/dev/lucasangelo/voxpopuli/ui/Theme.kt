@@ -72,7 +72,7 @@ fun VoxPopuliTheme(
     ) {
         CompositionLocalProvider(
             LocalRippleConfiguration provides rippleConfiguration,
-//            LocalDensity provides customDensity
+            LocalDensity provides customDensity
         ) {
             Surface(
                 modifier = Modifier.fillMaxSize(),

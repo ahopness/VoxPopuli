@@ -81,10 +81,8 @@ class FeedViewModel @AssistedInject constructor(
             initialValue = Profile()
         )
 
+    init { requestFeedUpdate(true) }
     fun requestFeedUpdate(debounced: Boolean = true) = viewModelScope.launch {
-        _isLoading.value = true
-        _errorMessage.value = null
-
         suspend fun fetchSource(source: SourceEntity) {
             if (debounced) {
                 val fetchingThreshold = Duration.ofMinutes(30)
@@ -94,6 +92,9 @@ class FeedViewModel @AssistedInject constructor(
                 if (timeSinceLastFetch < fetchingThreshold)
                     return
             }
+
+            _isLoading.value = true
+            _errorMessage.value = null
 
             repository.fetchSource(source)
         }
