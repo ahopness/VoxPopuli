@@ -91,4 +91,6 @@ dependencies {
     implementation("com.google.mediapipe:tasks-text:0.10.35")
 
     implementation("io.github.kdroidfilter:composemediaplayer:0.10.0")
+
+    implementation("androidx.browser:browser:1.8.0")
 }

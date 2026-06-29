@@ -1,5 +1,8 @@
 package dev.lucasangelo.voxpopuli.ui.screen.home
 
+import android.content.Context
+import android.net.Uri
+import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -36,6 +39,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ColorMatrix
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -209,8 +213,12 @@ fun Post(
     modifier: Modifier = Modifier,
     onBookmarked: (PostEntity) -> Unit
 ) {
+    val context = LocalContext.current
+
     Box(
-        modifier = modifier.fillMaxWidth()
+        modifier = modifier
+            .fillMaxWidth()
+            .clickable(onClick = { openUrl(context, post.link) })
     ) {
         Box(
             Modifier
@@ -269,6 +277,8 @@ fun Post(
 
             Text(post.title)
 
+            Spacer(Modifier.height(8.dp))
+
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -285,6 +295,7 @@ fun Post(
                         modifier = Modifier
                             .offset(x = (-16).dp)
                             .height(54.dp)
+                            .clickable(onClick = { openUrl(context, post.comments) })
                     )
 
                 Icon(
@@ -302,4 +313,11 @@ fun Post(
             }
         }
     }
+}
+fun openUrl(context: Context, url: String) {
+    val intent = CustomTabsIntent.Builder()
+        .setShowTitle(true)
+        .setUrlBarHidingEnabled(true)
+        .build()
+    intent.launchUrl(context, Uri.parse(url))
 }
