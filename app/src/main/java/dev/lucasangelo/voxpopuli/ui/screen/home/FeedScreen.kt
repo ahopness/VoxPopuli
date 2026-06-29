@@ -51,6 +51,7 @@ import dev.lucasangelo.voxpopuli.data.room.SourceEntity
 import dev.lucasangelo.voxpopuli.ui.component.CleanScaffold
 import dev.lucasangelo.voxpopuli.ui.component.FloatingExtendedTopBar
 import dev.lucasangelo.voxpopuli.ui.component.FloatingExtendedTopBarActionItem
+import dev.lucasangelo.voxpopuli.ui.component.MonochromeAsyncImage
 import dev.lucasangelo.voxpopuli.ui.component.floatingExtendedTopBarPadding
 import dev.lucasangelo.voxpopuli.ui.component.floatingNavigationBarPadding
 import dev.lucasangelo.voxpopuli.util.feedTypeMetas
@@ -212,14 +213,10 @@ fun Post(
                 .matchParentSize()
                 .alpha(0.5f)
         ) {
-            AsyncImage(
+            MonochromeAsyncImage(
                 model = source.logoUrl,
                 contentDescription = source.name,
                 contentScale = ContentScale.Crop,
-                colorFilter = ColorFilter.colorMatrix(ColorMatrix().apply {
-                    timesAssign(ColorMatrix().apply { setToSaturation(0f) })
-                    timesAssign(invertMatrix)
-                }),
                 modifier = Modifier
                     .fillMaxSize()
                     .blur(25.dp)
@@ -252,13 +249,9 @@ fun Post(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                AsyncImage(
+                MonochromeAsyncImage(
                     model = source.logoUrl,
                     contentDescription = source.name,
-                    colorFilter = ColorFilter.colorMatrix(ColorMatrix().apply {
-                        timesAssign(ColorMatrix().apply { setToSaturation(0f) })
-                        timesAssign(invertMatrix)
-                    }),
                     modifier = Modifier.height(16.dp)
                 )
 

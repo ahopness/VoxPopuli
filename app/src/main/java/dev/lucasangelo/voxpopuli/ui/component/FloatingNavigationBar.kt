@@ -133,7 +133,7 @@ fun FloatingNavigationButton(
     ) {
         when (icon) {
             is String ->
-                AsyncImage(
+                MonochromeAsyncImage(
                     model = icon,
                     contentDescription = null,
                     modifier = Modifier.size(72.dp)
