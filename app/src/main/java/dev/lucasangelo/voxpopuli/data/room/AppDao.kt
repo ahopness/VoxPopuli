@@ -32,7 +32,8 @@ interface AppDao {
         "SELECT * FROM PostEntity " +
         "INNER JOIN  SourceEntity on SourceEntity.id = PostEntity.sourceId " +
         "WHERE SourceEntity.muted = 0 " +
-        "AND PostEntity.bookmarked = 1 "
+        "AND PostEntity.bookmarked = 1 " +
+        "ORDER BY PostEntity.publishedAt DESC"
     )
     fun getAllBookmarkedPosts(): Flow<List<PostEntity>>
     @Query( value =
@@ -52,14 +53,16 @@ interface AppDao {
         "SELECT * FROM PostEntity " +
         "INNER JOIN  SourceEntity on SourceEntity.id = PostEntity.sourceId " +
         "WHERE SourceEntity.muted = 0 " +
-        "AND SourceEntity.category = :category "
+        "AND SourceEntity.category = :category " +
+        "ORDER BY PostEntity.publishedAt DESC"
     )
     fun getAllPostsIn(category: SourceCategory): Flow<List<PostEntity>>
     @Query( value =
         "SELECT * FROM PostEntity " +
         "INNER JOIN  SourceEntity on SourceEntity.id = PostEntity.sourceId " +
         "WHERE SourceEntity.muted = 0 " +
-        "AND SourceEntity.id = :sourceId "
+        "AND SourceEntity.id = :sourceId " +
+        "ORDER BY PostEntity.publishedAt DESC"
     )
     fun getAllPostsBy(sourceId: Long): Flow<List<PostEntity>>
     @Delete

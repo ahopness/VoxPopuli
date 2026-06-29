@@ -2,6 +2,7 @@ package dev.lucasangelo.voxpopuli.data
 
 import android.content.Context
 import android.util.Log
+import androidx.core.text.isDigitsOnly
 import androidx.datastore.core.DataStore
 import com.google.mediapipe.tasks.text.textembedder.TextEmbedder
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -11,8 +12,12 @@ import dev.lucasangelo.voxpopuli.data.room.AppDao
 import dev.lucasangelo.voxpopuli.data.room.PostEntity
 import dev.lucasangelo.voxpopuli.data.room.SourceCategory
 import dev.lucasangelo.voxpopuli.data.room.SourceEntity
-import dev.lucasangelo.voxpopuli.util.XmlHelper
+import dev.lucasangelo.voxpopuli.util.fetchImageMetadata
+import dev.lucasangelo.voxpopuli.util.parseRss
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
@@ -58,9 +63,12 @@ class AppRepository @Inject constructor(
         dao.updateSource(source)
 
     suspend fun insertPost(post: PostEntity) {
+        if (post.link.isEmpty())
+            return
+
         val id = post.title.hashCode()
 
-        var publishedInstant: Instant = Instant.EPOCH
+        var publishedInstant: Instant
         try {
             publishedInstant = OffsetDateTime.parse(
                 post.pubDate,
@@ -100,7 +108,7 @@ class AppRepository @Inject constructor(
     suspend fun updatePost(post: PostEntity) =
         dao.updatePost(post)
 
-    suspend fun fetchSource(source: SourceEntity): Boolean = withContext(Dispatchers.IO) {
+    suspend fun fetchSource(source: SourceEntity) = withContext(Dispatchers.IO) {
         val request = Request.Builder()
             .url(source.feedUrl)
             .build()
@@ -109,30 +117,34 @@ class AppRepository @Inject constructor(
             .newCall(request)
             .execute()
 
-        updateSource(source.copy(
-            lastFetched = Instant.now()
-        ))
-
         if (!response.isSuccessful) {
-            Log.e("OkHttp3@AppRepository", response.code.toString())
-            return@withContext false
+            Log.i("AppRepository::fetchSource@OkHttp3", response.code.toString())
+            return@withContext
         }
 
         val xml = response.body.string()
-        val rss = XmlHelper.parseRss(xml)
+        val rss = parseRss(xml)
 
-        rss.channel.item.forEach {
-            insertPost(PostEntity(
-                sourceId = source.id,
-                author = it.author,
-                title = it.title,
-                description = it.description,
-                pubDate = it.pubDate,
-                link = it.link,
-                comments = it.comments,
-            ))
+        coroutineScope {
+            val deferred = rss.channel.item.map { async {
+                val imageUrl = fetchImageMetadata(it.link) ?: ""
+                insertPost(PostEntity(
+                    sourceId = source.id,
+                    imageUrl = imageUrl,
+                    author = it.author,
+                    title = it.title,
+                    description = it.description,
+                    pubDate = it.pubDate,
+                    link = it.link,
+                    comments = if (it.comments.isDigitsOnly()) "" else it.comments, // NOTE: happens sometimes, no idea why
+                ))
+                Log.i("AppRepository::fetchSource", "FOUND: ${it.title}")
+            } }
+            deferred.awaitAll()
         }
 
-        return@withContext true
+        updateSource(source.copy(
+            lastFetched = Instant.now()
+        ))
     }
 }

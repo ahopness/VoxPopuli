@@ -2,7 +2,6 @@ package dev.lucasangelo.voxpopuli.viewmodel
 
 import android.content.Context
 import android.util.Log
-import androidx.compose.ui.util.fastForEach
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.assisted.Assisted
@@ -34,14 +33,14 @@ class FeedViewModel @AssistedInject constructor(
     @ApplicationContext context: Context,
     private val repository: AppRepository,
     @Assisted val type: FeedType,
-    @Assisted val customCategory: SourceCategory,
+    @Assisted val customCategory: SourceCategory?,
     @Assisted val customSource: SourceEntity?,
 ) : ViewModel() {
     @AssistedFactory interface Factory {
         fun create(
             type: FeedType,
-            customCategory: SourceCategory = SourceCategory.GENERAL,
-            customSource: SourceEntity? = null
+            customCategory: SourceCategory? = null,
+            customSource: SourceEntity? = null,
         ) : FeedViewModel
     }
 
@@ -50,7 +49,7 @@ class FeedViewModel @AssistedInject constructor(
             FeedType.BOOKMARKS -> repository.getAllBookmarkedPosts()
             FeedType.CURATED -> repository.getAllPosts()
             FeedType.NEW -> repository.getAllNewPosts()
-            FeedType.CATEGORY -> repository.getAllPostsIn(customCategory)
+            FeedType.CATEGORY -> repository.getAllPostsIn(customCategory!!)
             FeedType.SOURCE -> repository.getAllPostsBy(customSource!!.id)
         }
         .map {
@@ -59,15 +58,15 @@ class FeedViewModel @AssistedInject constructor(
                     post.embedding.cosineSimilarity(other = profile.value.embedding)
                 }
             else
-                it.sortedByDescending { post ->
-                    post.publishedAt
-                }
+                it
         }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = emptyList()
         )
+
+
 
     private val _isLoading = MutableStateFlow(false)
     val isLoading = _isLoading.asStateFlow()
@@ -92,7 +91,8 @@ class FeedViewModel @AssistedInject constructor(
                 val lastFetched = repository.getLastFetchedFromSource(source.id)
                 val timeSinceLastFetch = Duration.between(lastFetched, Instant.now())
 
-                if (timeSinceLastFetch < fetchingThreshold) return
+                if (timeSinceLastFetch < fetchingThreshold)
+                    return
             }
 
             repository.fetchSource(source)

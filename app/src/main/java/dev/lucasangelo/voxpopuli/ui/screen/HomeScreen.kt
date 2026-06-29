@@ -37,7 +37,9 @@ fun HomeScreen(
 ) {
     Box(Modifier.fillMaxSize()) {
         val settings by viewModel.settings.collectAsStateWithLifecycle()
-        val sources by viewModel.sources.collectAsStateWithLifecycle()
+
+        val sourcesList by viewModel.sources.collectAsStateWithLifecycle()
+        val sourcesMap = remember(sourcesList) { sourcesList.associateBy { it.id } }
 
         val settingsTab = remember {
             HomeTabItem(
@@ -46,32 +48,35 @@ fun HomeScreen(
                 destination = { SettingsScreen() }
             )
         }
-        val standardTabList = remember {
+        val standardTabList = remember(sourcesMap) {
             feedTypeMetas.map { HomeTabItem(
                     icon = it.value.first,
                     title = it.value.second,
                     destination = { FeedScreen(
-                        type = it.key
+                        type = it.key,
+                        sourcesMap,
                     ) }
             ) }
         }
-        val categoryTabList = remember {
+        val categoryTabList = remember(sourcesMap) {
             sourceCategoryMetas.map { HomeTabItem(
                     icon = it.value.first,
                     title = it.value.second,
                     destination = { FeedScreen(
                         type = FeedType.CATEGORY,
+                        sourcesMap,
                         customCategory = it.key
                     ) }
             ) }
         }
-        val sourceTabList = remember(sources) {
-            sources.map { HomeTabItem(
+        val sourceTabList = remember(sourcesList) {
+            sourcesList.map { HomeTabItem(
                 icon = it.logoUrl,
                 title = it.name,
                 destination = { FeedScreen(
                     type = FeedType.SOURCE,
-                    customSource = it
+                    sourcesMap,
+                    customSource = it,
                 ) }
             ) }
         }

@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "17385d8550fb338a96f538dbe80f2218",
+    "identityHash": "21a1f494b0384903f26e9bb232692c72",
     "entities": [
       {
         "tableName": "SourceEntity",
@@ -60,7 +60,7 @@
       },
       {
         "tableName": "PostEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `publishedAt` INTEGER NOT NULL, `sourceId` INTEGER NOT NULL, `author` TEXT NOT NULL, `title` TEXT NOT NULL, `description` TEXT NOT NULL, `pubDate` TEXT NOT NULL, `link` TEXT NOT NULL, `comments` TEXT NOT NULL, `embedding` BLOB NOT NULL, `bookmarked` INTEGER NOT NULL, PRIMARY KEY(`id`), FOREIGN KEY(`sourceId`) REFERENCES `SourceEntity`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `publishedAt` INTEGER NOT NULL, `sourceId` INTEGER NOT NULL, `imageUrl` TEXT NOT NULL, `author` TEXT NOT NULL, `title` TEXT NOT NULL, `description` TEXT NOT NULL, `pubDate` TEXT NOT NULL, `link` TEXT NOT NULL, `comments` TEXT NOT NULL, `embedding` BLOB NOT NULL, `bookmarked` INTEGER NOT NULL, PRIMARY KEY(`id`), FOREIGN KEY(`sourceId`) REFERENCES `SourceEntity`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "id",
@@ -78,6 +78,12 @@
             "fieldPath": "sourceId",
             "columnName": "sourceId",
             "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "imageUrl",
+            "columnName": "imageUrl",
+            "affinity": "TEXT",
             "notNull": true
           },
           {
@@ -173,7 +179,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '17385d8550fb338a96f538dbe80f2218')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '21a1f494b0384903f26e9bb232692c72')"
     ]
   }
 }

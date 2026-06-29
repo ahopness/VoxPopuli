@@ -1,6 +1,7 @@
 package dev.lucasangelo.voxpopuli.util
 
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorMatrix
 
 val overlayTransparencyColor = Color.Black.copy(0.75f)
 
@@ -22,3 +23,12 @@ inline fun Color.lighten(lightenBy: Float = 0.25f): Color {
         alpha = alpha
     )
 }
+
+val invertMatrix = ColorMatrix( values =
+    floatArrayOf(
+        -1f, 0f, 0f, 0f, 255f, // Red
+        0f, -1f, 0f, 0f, 255f, // Green
+        0f, 0f, -1f, 0f, 255f, // Blue
+        0f, 0f, 0f, 1f, 0f  // Alpha
+    )
+)

@@ -58,6 +58,7 @@ data class PostEntity(
 
     val sourceId: Long,
 
+    val imageUrl: String,
     val author: String,
     val title: String,
     val description: String,

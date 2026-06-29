@@ -68,7 +68,6 @@ dependencies {
 
     implementation("javax.xml.stream:stax-api:1.0-2")
     implementation("com.fasterxml.woodstox:woodstox-core:7.2.1")
-//    implementation("tools.jackson.dataformat:jackson-dataformat-xml:3.1.4")
 
     val room_version = "2.8.4"
     implementation("androidx.room:room-runtime:${room_version}")
@@ -87,6 +86,7 @@ dependencies {
 
     implementation("io.coil-kt.coil3:coil-compose:3.5.0")
     implementation("io.coil-kt.coil3:coil-network-okhttp:3.5.0")
+    implementation("io.coil-kt.coil3:coil-svg:3.5.0")
 
     implementation("com.google.mediapipe:tasks-text:0.10.35")
 
