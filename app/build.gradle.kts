@@ -7,7 +7,6 @@ plugins {
     id("com.google.dagger.hilt.android")
 
     id("org.jetbrains.kotlin.plugin.serialization") version "2.4.0"
-//    kotlin("plugin.serialization") version "2.0.21"
 }
 
 android {
@@ -67,8 +66,9 @@ dependencies {
 
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.11.0")
 
-    implementation("io.github.pdvrieze.xmlutil:core:1.0.0-rc3")
-    implementation("io.github.pdvrieze.xmlutil:serialization:1.0.0-rc3")
+    implementation("javax.xml.stream:stax-api:1.0-2")
+    implementation("com.fasterxml.woodstox:woodstox-core:7.2.1")
+//    implementation("tools.jackson.dataformat:jackson-dataformat-xml:3.1.4")
 
     val room_version = "2.8.4"
     implementation("androidx.room:room-runtime:${room_version}")

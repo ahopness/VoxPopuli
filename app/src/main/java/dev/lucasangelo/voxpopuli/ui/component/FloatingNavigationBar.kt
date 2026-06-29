@@ -85,7 +85,6 @@ fun BoxScope.FloatingNavigationBar(
                     )
                 )
         ) {
-            val coroutineScope = rememberCoroutineScope()
             val listState = rememberLazyListState()
 
             LaunchedEffect(selectedIndex) {
@@ -102,7 +101,7 @@ fun BoxScope.FloatingNavigationBar(
                     .padding(vertical = 12.dp)
                     .heightIn(92.dp)
             ) {
-                item { Spacer(Modifier.width(24.dp)) }
+                item { Spacer(Modifier.width(16.dp)) }
 
                 items(items) { item ->
                     FloatingNavigationButton(
@@ -113,7 +112,7 @@ fun BoxScope.FloatingNavigationBar(
                     )
                 }
 
-                item { Spacer(Modifier.width(24.dp)) }
+                item { Spacer(Modifier.width(16.dp)) }
             }
         }
     }
@@ -126,12 +125,6 @@ fun FloatingNavigationButton(
     showTitle: Boolean,
     onClick: () -> Unit,
 ) {
-    val actualTitle: String = when (title) {
-        is String -> title
-        is Int -> stringResource(title)
-        else -> ""
-    }
-
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
@@ -155,7 +148,12 @@ fun FloatingNavigationButton(
         }
         AnimatedVisibility(showTitle) {
             Text(
-                text = actualTitle,
+                text =
+                    when (title) {
+                        is String -> title
+                        is Int -> stringResource(title)
+                        else -> ""
+                    },
                 fontFamily = FontFamily.Monospace,
                 style = MaterialTheme.typography.titleSmall
             )

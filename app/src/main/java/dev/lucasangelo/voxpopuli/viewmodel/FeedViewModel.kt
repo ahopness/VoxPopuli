@@ -2,10 +2,9 @@ package dev.lucasangelo.voxpopuli.viewmodel
 
 import android.content.Context
 import android.util.Log
+import androidx.compose.ui.util.fastForEach
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.mediapipe.tasks.components.containers.Embedding
-import com.google.mediapipe.tasks.text.textembedder.TextEmbedder
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -27,7 +26,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import java.util.Optional
+import java.time.Duration
+import java.time.Instant
 
 @HiltViewModel(assistedFactory = FeedViewModel.Factory::class)
 class FeedViewModel @AssistedInject constructor(
@@ -59,7 +59,9 @@ class FeedViewModel @AssistedInject constructor(
                     post.embedding.cosineSimilarity(other = profile.value.embedding)
                 }
             else
-                it
+                it.sortedByDescending { post ->
+                    post.publishedAt
+                }
         }
         .stateIn(
             scope = viewModelScope,
@@ -80,12 +82,24 @@ class FeedViewModel @AssistedInject constructor(
             initialValue = Profile()
         )
 
-    fun updateFeed() = viewModelScope.launch {
+    fun requestFeedUpdate(debounced: Boolean = true) = viewModelScope.launch {
         _isLoading.value = true
         _errorMessage.value = null
 
+        suspend fun fetchSource(source: SourceEntity) {
+            if (debounced) {
+                val fetchingThreshold = Duration.ofMinutes(30)
+                val lastFetched = repository.getLastFetchedFromSource(source.id)
+                val timeSinceLastFetch = Duration.between(lastFetched, Instant.now())
+
+                if (timeSinceLastFetch < fetchingThreshold) return
+            }
+
+            repository.fetchSource(source)
+        }
+
         try {
-            when(type) {
+            when (type) {
                 FeedType.BOOKMARKS -> { }
                 FeedType.CURATED -> {
                     repository.getAllSourcesNow()
@@ -94,14 +108,14 @@ class FeedViewModel @AssistedInject constructor(
                                 .ignoredCategories.contains(it.category)
                         }
                         .map {
-                            async { repository.fetchSource(it) }
+                            async { fetchSource(it) }
                         }
                         .awaitAll()
                 }
                 FeedType.NEW -> {
                     repository.getAllSourcesNow()
                         .map {
-                            async { repository.fetchSource(it) }
+                            async { fetchSource(it) }
                         }
                         .awaitAll()
                 }
@@ -111,12 +125,12 @@ class FeedViewModel @AssistedInject constructor(
                             it.category == customCategory
                         }
                         .map {
-                            async { repository.fetchSource(it) }
+                            async { fetchSource(it) }
                         }
                         .awaitAll()
                 }
                 FeedType.SOURCE -> {
-                    repository.fetchSource(
+                    fetchSource(
                         repository.getSource(customSource!!.id)
                     )
                 }

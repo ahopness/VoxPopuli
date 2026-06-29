@@ -7,6 +7,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import kotlinx.coroutines.flow.Flow
+import java.time.Instant
 
 @Dao
 interface AppDao {
@@ -14,6 +15,8 @@ interface AppDao {
     suspend fun insertSource(source: SourceEntity)
     @Query("SELECT * FROM SourceEntity WHERE id = :sourceId")
     suspend fun getSource(sourceId: Long): SourceEntity
+    @Query("SELECT lastFetched FROM SourceEntity WHERE id = :sourceId")
+    suspend fun getLastFetchedFromSource(sourceId: Long): Instant
     @Query("SELECT * FROM SourceEntity")
     fun getAllSources(): Flow<List<SourceEntity>>
     @Query("SELECT * FROM SourceEntity")

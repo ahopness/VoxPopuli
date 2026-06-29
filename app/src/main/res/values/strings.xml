@@ -1,6 +1,9 @@
 <resources>
     <string name="app_name">Vox Populi</string>
     <string name="go_back">Go Back</string>
+    <string name="options">Options</string>
+    <string name="thinking">Hold your horses, fetching…</string>
+    <string name="feed_empty">Absence, the state of being away or the lack of something.</string>
     <string name="feed_settings">Settings</string>
     <string name="feed_bookmarks">Bookmarks</string>
     <string name="feed_curated">For You</string>

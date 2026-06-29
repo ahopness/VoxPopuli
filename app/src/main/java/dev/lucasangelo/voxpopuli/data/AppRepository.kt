@@ -11,12 +11,10 @@ import dev.lucasangelo.voxpopuli.data.room.AppDao
 import dev.lucasangelo.voxpopuli.data.room.PostEntity
 import dev.lucasangelo.voxpopuli.data.room.SourceCategory
 import dev.lucasangelo.voxpopuli.data.room.SourceEntity
-import dev.lucasangelo.voxpopuli.data.okhttp.Rss
+import dev.lucasangelo.voxpopuli.util.XmlHelper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
-import nl.adaptivity.xmlutil.QName
-import nl.adaptivity.xmlutil.serialization.XML
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.time.Instant
@@ -34,26 +32,43 @@ class AppRepository @Inject constructor(
     private val textEmbedder: TextEmbedder,
     private val okHttpClient: OkHttpClient,
 ) {
-    val settings: Flow<Settings> = settingsDataStore.data
-    suspend fun updateSettings(settings: Settings) = settingsDataStore.updateData { settings }
+    val settings: Flow<Settings> =
+        settingsDataStore.data
+    suspend fun updateSettings(settings: Settings) =
+        settingsDataStore.updateData { settings }
 
-    val profile: Flow<Profile> = profileDataStore.data
-    suspend fun updateProfile(profile: Profile) = profileDataStore.updateData { profile }
+    val profile: Flow<Profile> =
+        profileDataStore.data
+    suspend fun updateProfile(profile: Profile) =
+        profileDataStore.updateData { profile }
 
-    suspend fun insertSource(source: SourceEntity) = dao.insertSource(source)
-    suspend fun getSource(sourceId: Long): SourceEntity  = dao.getSource(sourceId)
-    fun getAllSources(): Flow<List<SourceEntity>>  = dao.getAllSources()
-    suspend fun getAllSourcesNow(): List<SourceEntity>  = dao.getAllSourcesNow()
-    suspend fun deleteSource(source: SourceEntity) = dao.deleteSource(source)
-    suspend fun updateSource(source: SourceEntity) = dao.updateSource(source)
+    suspend fun insertSource(source: SourceEntity) =
+        dao.insertSource(source)
+    suspend fun getSource(sourceId: Long): SourceEntity =
+        dao.getSource(sourceId)
+    suspend fun getLastFetchedFromSource(sourceId: Long): Instant =
+        dao.getLastFetchedFromSource(sourceId)
+    fun getAllSources(): Flow<List<SourceEntity>> =
+        dao.getAllSources()
+    suspend fun getAllSourcesNow(): List<SourceEntity> =
+        dao.getAllSourcesNow()
+    suspend fun deleteSource(source: SourceEntity) =
+        dao.deleteSource(source)
+    suspend fun updateSource(source: SourceEntity) =
+        dao.updateSource(source)
 
     suspend fun insertPost(post: PostEntity) {
         val id = post.title.hashCode()
 
-        val offsetDateTime = OffsetDateTime.parse(
-            post.pubDate,
-            DateTimeFormatter.RFC_1123_DATE_TIME
-        )
+        var publishedInstant: Instant = Instant.EPOCH
+        try {
+            publishedInstant = OffsetDateTime.parse(
+                post.pubDate,
+                DateTimeFormatter.RFC_1123_DATE_TIME
+            ).toInstant()
+        } catch (e: Exception) {
+            return
+        }
 
         val embedding = textEmbedder.embed(post.title)
             .embeddingResult()
@@ -65,18 +80,25 @@ class AppRepository @Inject constructor(
         dao.insertPost(
             post.copy(
                 id = id,
-                publishedAt = offsetDateTime.toInstant(),
+                publishedAt = publishedInstant,
                 embedding = embedding
             )
         )
     }
-    fun getAllPosts(): Flow<List<PostEntity>> = dao.getAllPosts()
-    fun getAllNewPosts(): Flow<List<PostEntity>> = dao.getAllNewPosts()
-    fun getAllPostsIn(category: SourceCategory): Flow<List<PostEntity>> = dao.getAllPostsIn(category)
-    fun getAllPostsBy(sourceId: Long): Flow<List<PostEntity>> = dao.getAllPostsBy(sourceId)
-    fun getAllBookmarkedPosts(): Flow<List<PostEntity>> = dao.getAllBookmarkedPosts()
-    suspend fun deletePost(post: PostEntity) = dao.deletePost(post)
-    suspend fun updatePost(post: PostEntity) = dao.updatePost(post)
+    fun getAllPosts(): Flow<List<PostEntity>> =
+        dao.getAllPosts()
+    fun getAllNewPosts(): Flow<List<PostEntity>> =
+        dao.getAllNewPosts()
+    fun getAllPostsIn(category: SourceCategory): Flow<List<PostEntity>> =
+        dao.getAllPostsIn(category)
+    fun getAllPostsBy(sourceId: Long): Flow<List<PostEntity>> =
+        dao.getAllPostsBy(sourceId)
+    fun getAllBookmarkedPosts(): Flow<List<PostEntity>> =
+        dao.getAllBookmarkedPosts()
+    suspend fun deletePost(post: PostEntity) =
+        dao.deletePost(post)
+    suspend fun updatePost(post: PostEntity) =
+        dao.updatePost(post)
 
     suspend fun fetchSource(source: SourceEntity): Boolean = withContext(Dispatchers.IO) {
         val request = Request.Builder()
@@ -87,15 +109,17 @@ class AppRepository @Inject constructor(
             .newCall(request)
             .execute()
 
+        updateSource(source.copy(
+            lastFetched = Instant.now()
+        ))
+
         if (!response.isSuccessful) {
             Log.e("OkHttp3@AppRepository", response.code.toString())
             return@withContext false
         }
 
-        val rss = XML.v1.decodeFromString<Rss>(
-            str = response.body.string(),
-            rootName = QName("rss")
-        )
+        val xml = response.body.string()
+        val rss = XmlHelper.parseRss(xml)
 
         rss.channel.item.forEach {
             insertPost(PostEntity(
@@ -108,10 +132,6 @@ class AppRepository @Inject constructor(
                 comments = it.comments,
             ))
         }
-
-        dao.updateSource(source.copy(
-            lastFetched = Instant.now()
-        ))
 
         return@withContext true
     }
