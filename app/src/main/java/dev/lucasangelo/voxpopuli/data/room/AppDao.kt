@@ -29,7 +29,7 @@ interface AppDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertPost(post: PostEntity)
     @Query( value =
-        "SELECT * FROM PostEntity " +
+        "SELECT PostEntity.* FROM PostEntity " +
         "INNER JOIN  SourceEntity on SourceEntity.id = PostEntity.sourceId " +
         "WHERE SourceEntity.muted = 0 " +
         "AND PostEntity.bookmarked = 1 " +
@@ -37,20 +37,20 @@ interface AppDao {
     )
     fun getAllBookmarkedPosts(): Flow<List<PostEntity>>
     @Query( value =
-        "SELECT * FROM PostEntity " +
+        "SELECT PostEntity.* FROM PostEntity " +
         "INNER JOIN  SourceEntity on SourceEntity.id = PostEntity.sourceId " +
         "WHERE SourceEntity.muted = 0"
     )
     fun getAllPosts(): Flow<List<PostEntity>>
     @Query( value =
-        "SELECT * FROM PostEntity " +
+        "SELECT PostEntity.* FROM PostEntity " +
         "INNER JOIN  SourceEntity on SourceEntity.id = PostEntity.sourceId " +
         "WHERE SourceEntity.muted = 0 " +
         "ORDER BY PostEntity.publishedAt DESC "
     )
     fun getAllNewPosts(): Flow<List<PostEntity>>
     @Query( value =
-        "SELECT * FROM PostEntity " +
+        "SELECT PostEntity.* FROM PostEntity " +
         "INNER JOIN  SourceEntity on SourceEntity.id = PostEntity.sourceId " +
         "WHERE SourceEntity.muted = 0 " +
         "AND SourceEntity.category = :category " +
@@ -58,7 +58,7 @@ interface AppDao {
     )
     fun getAllPostsIn(category: SourceCategory): Flow<List<PostEntity>>
     @Query( value =
-        "SELECT * FROM PostEntity " +
+        "SELECT PostEntity.* FROM PostEntity " +
         "INNER JOIN  SourceEntity on SourceEntity.id = PostEntity.sourceId " +
         "WHERE SourceEntity.muted = 0 " +
         "AND SourceEntity.id = :sourceId " +

@@ -22,7 +22,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.time.Duration
@@ -44,29 +45,40 @@ class FeedViewModel @AssistedInject constructor(
         ) : FeedViewModel
     }
 
-    val feed: StateFlow<List<PostEntity>> =
-        when(type) {
-            FeedType.BOOKMARKS -> repository.getAllBookmarkedPosts()
-            FeedType.CURATED -> repository.getAllPosts()
-            FeedType.NEW -> repository.getAllNewPosts()
-            FeedType.CATEGORY -> repository.getAllPostsIn(customCategory!!)
-            FeedType.SOURCE -> repository.getAllPostsBy(customSource!!.id)
-        }
-        .map {
-            if (type == FeedType.CURATED)
-                it.sortedByDescending { post ->
-                    post.embedding.cosineSimilarity(other = profile.value.embedding)
+    val feed: StateFlow<List<PostEntity>> = combine(
+            when(type) {
+                FeedType.BOOKMARKS -> repository.getAllBookmarkedPosts()
+                FeedType.CURATED -> repository.getAllPosts()
+                FeedType.NEW -> repository.getAllNewPosts()
+                FeedType.CATEGORY -> repository.getAllPostsIn(customCategory!!)
+                FeedType.SOURCE -> repository.getAllPostsBy(customSource!!.id)
+            },
+            repository.profile,
+            repository.getAllSources()
+        ) { posts, profile, sources ->
+            val sourcesMap = sources.associateBy { it.id }
+
+            val filteredPosts = if (type == FeedType.CURATED) {
+                posts.filterNot { post ->
+                    val source = sourcesMap[post.sourceId]
+                    source != null && profile.ignoredCategories.contains(source.category)
                 }
-            else
-                it
-        }
-        .stateIn(
+            } else {
+                posts
+            }
+
+            if (type == FeedType.CURATED) {
+                filteredPosts.sortedByDescending { post ->
+                    post.embedding.cosineSimilarity(other = profile.embedding)
+                }
+            } else {
+                filteredPosts
+            }
+        }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = emptyList()
         )
-
-
 
     private val _isLoading = MutableStateFlow(false)
     val isLoading = _isLoading.asStateFlow()
@@ -103,9 +115,10 @@ class FeedViewModel @AssistedInject constructor(
             when (type) {
                 FeedType.BOOKMARKS -> { }
                 FeedType.CURATED -> {
+                    val currentProfile = repository.profile.first()
                     repository.getAllSourcesNow()
                         .filterNot {
-                            profile.value
+                            currentProfile
                                 .ignoredCategories.contains(it.category)
                         }
                         .map {
@@ -144,7 +157,7 @@ class FeedViewModel @AssistedInject constructor(
         }
     }
 
-    fun onProfileInteraction(post: PostEntity) = viewModelScope.launch {
+    fun updateProfileEmbedding(post: PostEntity) = viewModelScope.launch {
         val alpha = 0.1f
 
         val u = profile.value.embedding.map { it * (1f - alpha) }

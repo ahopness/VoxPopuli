@@ -93,7 +93,7 @@ fun HomeScreen(
             }
 
         val pagerState = rememberPagerState(
-            initialPage = 3,
+            initialPage = 2,
             pageCount = { tabList.size }
         )
         HorizontalPager(

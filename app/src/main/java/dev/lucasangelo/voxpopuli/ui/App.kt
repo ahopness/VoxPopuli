@@ -40,12 +40,12 @@ fun App(
     }
 
     val settings by viewModel.settings.collectAsStateWithLifecycle()
+    if (settings == null) return
 
     Box {
         NavHost(
             navController,
-//            startDestination = if (settings.showOnboarding) OnboardingRoute else HomeRoute
-            startDestination = HomeRoute,
+            startDestination = if (settings!!.showOnboarding) OnboardingRoute else HomeRoute,
             enterTransition = { slideIntoContainer(
                 animationSpec = tween(200, easing = EaseOut),
                 towards = AnimatedContentTransitionScope.SlideDirection.Start

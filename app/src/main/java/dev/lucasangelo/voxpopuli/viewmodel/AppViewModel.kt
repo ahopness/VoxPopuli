@@ -18,13 +18,10 @@ class AppViewModel @Inject constructor(
     @ApplicationContext context: Context,
     private val repository: AppRepository,
 ) : ViewModel() {
-    val settings: StateFlow<Settings> = repository.settings
+    val settings: StateFlow<Settings?> = repository.settings
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
-            initialValue = Settings()
+            initialValue = null
         )
-    fun updateSettings(settings: Settings) = viewModelScope.launch {
-        repository.updateSettings(settings)
-    }
 }

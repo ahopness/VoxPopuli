@@ -13,7 +13,7 @@ import java.io.OutputStream
 
 @Serializable
 data class Profile(
-    val ignoredCategories: List<SourceCategory> = emptyList(),
+    val ignoredCategories: List<SourceCategory> = SourceCategory.entries.toList(),
     val embedding: List<Float> = emptyList(),
 )
 

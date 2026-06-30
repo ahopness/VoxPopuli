@@ -15,10 +15,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -27,13 +25,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -41,15 +35,12 @@ import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.graphics.ColorMatrix
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.core.text.isDigitsOnly
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
@@ -65,7 +56,6 @@ import dev.lucasangelo.voxpopuli.ui.component.floatingExtendedTopBarPadding
 import dev.lucasangelo.voxpopuli.ui.component.floatingNavigationBarPadding
 import dev.lucasangelo.voxpopuli.util.feedTypeMetas
 import dev.lucasangelo.voxpopuli.util.formatInstant
-import dev.lucasangelo.voxpopuli.util.invertMatrix
 import dev.lucasangelo.voxpopuli.util.sourceCategoryMetas
 import dev.lucasangelo.voxpopuli.viewmodel.FeedViewModel
 import kotlinx.coroutines.launch
@@ -204,6 +194,9 @@ fun FeedScreen(
                                         ),
                                     onBookmarked = {
                                         viewModel.bookmarkPost(post)
+                                    },
+                                    onInteractedWith = {
+                                        viewModel.updateProfileEmbedding(post)
                                     }
                                 )
                         }
@@ -220,14 +213,18 @@ fun Post(
     post: PostEntity,
     source: SourceEntity,
     modifier: Modifier = Modifier,
-    onBookmarked: (PostEntity) -> Unit
+    onBookmarked: (PostEntity) -> Unit,
+    onInteractedWith: (PostEntity) -> Unit,
 ) {
     val context = LocalContext.current
 
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .clickable(onClick = { openUrl(context, post.link) })
+            .clickable(onClick = {
+                onInteractedWith(post)
+                openUrl(context, post.link)
+            })
     ) {
         Box(
             Modifier
@@ -262,7 +259,6 @@ fun Post(
 
         Column(
             horizontalAlignment = Alignment.End,
-//            verticalArrangement = Arrangement.spacedBy(12.dp),
             modifier = Modifier
                 .padding(24.dp)
                 .fillMaxWidth()
