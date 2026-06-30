@@ -2,7 +2,6 @@ package dev.lucasangelo.voxpopuli.data.datastore
 
 import androidx.datastore.core.CorruptionException
 import androidx.datastore.core.Serializer
-import dev.lucasangelo.voxpopuli.data.room.SourceCategory
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable

@@ -19,12 +19,11 @@ import dev.lucasangelo.voxpopuli.ui.component.FloatingNavigationBar
 import dev.lucasangelo.voxpopuli.ui.screen.home.FeedScreen
 import dev.lucasangelo.voxpopuli.ui.screen.home.FeedType
 import dev.lucasangelo.voxpopuli.ui.screen.home.SettingsScreen
-import dev.lucasangelo.voxpopuli.util.sourceCategoryMetas
 import dev.lucasangelo.voxpopuli.util.feedTypeMetas
+import dev.lucasangelo.voxpopuli.util.sourceCategoryMetas
 import dev.lucasangelo.voxpopuli.viewmodel.HomeViewModel
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
-import kotlin.collections.listOf
 
 @Serializable
 object HomeRoute
