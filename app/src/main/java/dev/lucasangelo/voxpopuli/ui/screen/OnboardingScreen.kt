@@ -47,7 +47,6 @@ object OnboardingRoute
 @Composable
 fun OnboardingScreen(
     rootNavController: NavController,
-    rootShowMessage: (String) -> Unit,
     viewModel: OnboardingViewModel = hiltViewModel()
 ) {
     val settings by viewModel.settings.collectAsStateWithLifecycle()

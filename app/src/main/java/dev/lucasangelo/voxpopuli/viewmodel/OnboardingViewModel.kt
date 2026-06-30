@@ -58,7 +58,7 @@ class OnboardingViewModel @Inject constructor(
                 val alpha = 0.1f
                 val u = profileEmbedding.map { it * (1f - alpha) }
                 val v = categoryEmbedding.map { it * alpha }
-                profileEmbedding = u + v
+                profileEmbedding = u.zip(v) { a, b -> a + b }
         } }
 
         repository.updateProfile(updatedProfile.copy(

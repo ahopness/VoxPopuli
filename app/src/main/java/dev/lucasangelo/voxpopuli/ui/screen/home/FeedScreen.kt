@@ -60,6 +60,7 @@ import dev.lucasangelo.voxpopuli.util.formatInstant
 import dev.lucasangelo.voxpopuli.util.sourceCategoryMetas
 import dev.lucasangelo.voxpopuli.viewmodel.FeedViewModel
 import kotlinx.coroutines.launch
+import androidx.core.net.toUri
 
 enum class FeedType { BOOKMARKS, CURATED, NEW, CATEGORY, SOURCE }
 @Composable
@@ -351,5 +352,5 @@ fun openUrl(context: Context, url: String) {
         .setShowTitle(true)
         .setUrlBarHidingEnabled(true)
         .build()
-    intent.launchUrl(context, Uri.parse(url))
+    intent.launchUrl(context, url.toUri())
 }

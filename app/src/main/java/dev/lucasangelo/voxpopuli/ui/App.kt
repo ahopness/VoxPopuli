@@ -61,7 +61,6 @@ fun App(
             composable<OnboardingRoute> {
                 OnboardingScreen(
                     navController,
-                    showMessage
                 )
             }
             composable<HomeRoute> {

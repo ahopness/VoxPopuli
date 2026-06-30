@@ -3,7 +3,8 @@ package dev.lucasangelo.voxpopuli.util
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorMatrix
 
-val overlayTransparencyColor = Color.Black.copy(0.75f)
+//val overlayTransparencyColor = Color.Black.copy(0.75f)
+val overlayTransparencyColor = Color.Black
 
 inline fun Color.darken(darkenBy: Float = 0.75f): Color {
     val multiplier = 1f - darkenBy

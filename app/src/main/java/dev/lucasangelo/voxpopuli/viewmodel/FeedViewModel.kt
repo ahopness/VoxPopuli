@@ -82,13 +82,6 @@ class FeedViewModel @AssistedInject constructor(
     private val _errorMessage = MutableStateFlow<String?>(null)
     val errorMessage = _errorMessage.asStateFlow()
 
-    val profile: StateFlow<Profile> = repository.profile
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = Profile()
-        )
-
     init { requestFeedUpdate(true) }
     fun requestFeedUpdate(debounced: Boolean = true) = viewModelScope.launch {
         _isLoading.value = true
@@ -160,13 +153,15 @@ class FeedViewModel @AssistedInject constructor(
     }
 
     fun updateProfileEmbedding(post: PostEntity) = viewModelScope.launch {
+        val profile = repository.profile.first()
+
         val alpha = 0.1f
 
-        val u = profile.value.embedding.map { it * (1f - alpha) }
+        val u = profile.embedding.map { it * (1f - alpha) }
         val v = post.embedding.map { it * alpha }
 
-        repository.updateProfile(profile.value.copy(
-            embedding = u + v
+        repository.updateProfile(profile.copy(
+            embedding = u.zip(v) { a, b -> a + b }
         ))
     }
 
