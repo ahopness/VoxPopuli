@@ -39,6 +39,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -138,6 +139,8 @@ fun FeedScreen(
         ) }
     ) {
         val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
+        val loadingProgress by viewModel.loadingProgress.collectAsStateWithLifecycle()
+        val errorMessage by viewModel.errorMessage.collectAsStateWithLifecycle()
         val feed by viewModel.feed.collectAsStateWithLifecycle()
 
         PullToRefreshBox(
@@ -154,7 +157,39 @@ fun FeedScreen(
                 if (isLoading)
                     item {
                         Text(
-                            text = stringResource(R.string.thinking),
+                            text = buildAnnotatedString {
+                                appendLine(stringResource(R.string.loading))
+                                append(loadingProgress.toString()); append(" ")
+                                append(stringResource(R.string.fetched))
+
+                            },
+                            color = Color.Gray,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier
+                                .padding(horizontal = 48.dp)
+                                .padding(top = 128.dp)
+                                .fillMaxWidth(),
+                        )
+                    }
+                else if (errorMessage != null)
+                    item {
+                        Text(
+                            text = buildAnnotatedString {
+                                appendLine(stringResource(R.string.feed_error))
+                                append(errorMessage)
+                            },
+                            color = Color.Gray,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier
+                                .padding(horizontal = 48.dp)
+                                .padding(top = 128.dp)
+                                .fillMaxWidth(),
+                        )
+                    }
+                else if (feed.isEmpty())
+                    item {
+                        Text(
+                            text = stringResource(R.string.feed_empty),
                             color = Color.Gray,
                             textAlign = TextAlign.Center,
                             modifier = Modifier
@@ -164,42 +199,29 @@ fun FeedScreen(
                         )
                     }
                 else
-                    if (feed.isEmpty())
-                        item {
-                            Text(
-                                text = stringResource(R.string.feed_empty),
-                                color = Color.Gray,
-                                textAlign = TextAlign.Center,
-                                modifier = Modifier
-                                    .padding(horizontal = 48.dp)
-                                    .padding(top = 128.dp)
-                                    .fillMaxWidth(),
-                            )
-                        }
-                    else
-                        items(feed, key = { it.id }) { post ->
-                            val source =
-                                sources[post.sourceId] //NOTE: causes NullPointerException sometimes, idk why, prob race condition
+                    items(feed, key = { it.id }) { post ->
+                        val source =
+                            sources[post.sourceId] //NOTE: causes NullPointerException sometimes, idk why, prob race condition
 
-                            if (source != null)
-                                Post(
-                                    post,
-                                    source,
-                                    Modifier
-                                        .padding(horizontal = 12.dp)
-                                        .clip(RoundedCornerShape(6.dp))
-                                        .border(
-                                            border = BorderStroke(width = 1.dp, color = Color.Gray),
-                                            shape = RoundedCornerShape(6.dp)
-                                        ),
-                                    onBookmarked = {
-                                        viewModel.bookmarkPost(post)
-                                    },
-                                    onInteractedWith = {
-                                        viewModel.updateProfileEmbedding(post)
-                                    }
-                                )
-                        }
+                        if (source != null)
+                            Post(
+                                post,
+                                source,
+                                Modifier
+                                    .padding(horizontal = 12.dp)
+                                    .clip(RoundedCornerShape(6.dp))
+                                    .border(
+                                        border = BorderStroke(width = 1.dp, color = Color.Gray),
+                                        shape = RoundedCornerShape(6.dp)
+                                    ),
+                                onBookmarked = {
+                                    viewModel.bookmarkPost(post)
+                                },
+                                onInteractedWith = {
+                                    viewModel.updateProfileEmbedding(post)
+                                }
+                            )
+                    }
 
 
                 item { Spacer(Modifier.height(floatingNavigationBarPadding + 32.dp)) }

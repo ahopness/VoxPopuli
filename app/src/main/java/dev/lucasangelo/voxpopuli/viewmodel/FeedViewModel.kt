@@ -26,6 +26,8 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import java.time.Duration
 import java.time.Instant
 
@@ -58,22 +60,17 @@ class FeedViewModel @AssistedInject constructor(
         ) { posts, profile, sources ->
             val sourcesMap = sources.associateBy { it.id }
 
-            val filteredPosts = if (type == FeedType.CURATED) {
-                posts.filterNot { post ->
-                    val source = sourcesMap[post.sourceId]
-                    source != null && profile.ignoredCategories.contains(source.category)
-                }
-            } else {
+            if (type == FeedType.CURATED)
                 posts
-            }
-
-            if (type == FeedType.CURATED) {
-                filteredPosts.sortedByDescending { post ->
-                    post.embedding.cosineSimilarity(other = profile.embedding)
-                }
-            } else {
-                filteredPosts
-            }
+                    .filterNot { post ->
+                        val source = sourcesMap[post.sourceId]
+                        source != null && profile.ignoredCategories.contains(source.category)
+                    }
+                    .sortedByDescending { post ->
+                        post.embedding.cosineSimilarity(to = profile.embedding)
+                    }
+            else
+                posts
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
@@ -82,7 +79,8 @@ class FeedViewModel @AssistedInject constructor(
 
     private val _isLoading = MutableStateFlow(false)
     val isLoading = _isLoading.asStateFlow()
-
+    private val _loadingProgress = MutableStateFlow(0)
+    val loadingProgress = _loadingProgress.asStateFlow()
     private val _errorMessage = MutableStateFlow<String?>(null)
     val errorMessage = _errorMessage.asStateFlow()
 
@@ -95,20 +93,25 @@ class FeedViewModel @AssistedInject constructor(
 
     init { requestFeedUpdate(true) }
     fun requestFeedUpdate(debounced: Boolean = true) = viewModelScope.launch {
+        _isLoading.value = true
+        _loadingProgress.value = 0
+        _errorMessage.value = null
+
         suspend fun fetchSource(source: SourceEntity) {
             if (debounced) {
                 val fetchingThreshold = Duration.ofMinutes(30)
                 val lastFetched = repository.getLastFetchedFromSource(source.id)
                 val timeSinceLastFetch = Duration.between(lastFetched, Instant.now())
 
-                if (timeSinceLastFetch < fetchingThreshold)
+                if (timeSinceLastFetch < fetchingThreshold) {
+                    _loadingProgress.value++
                     return
+                }
             }
 
-            _isLoading.value = true
-            _errorMessage.value = null
-
             repository.fetchSource(source)
+
+            _loadingProgress.value++
         }
 
         try {
@@ -154,6 +157,7 @@ class FeedViewModel @AssistedInject constructor(
             _errorMessage.value = e.localizedMessage ?: "An error occurred!"
         } finally {
             _isLoading.value = false
+            _loadingProgress.value = 0
         }
     }
 

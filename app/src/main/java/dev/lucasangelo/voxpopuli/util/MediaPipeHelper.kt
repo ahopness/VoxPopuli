@@ -2,8 +2,8 @@ package dev.lucasangelo.voxpopuli.util
 
 import kotlin.math.sqrt
 
-fun List<Float>.cosineSimilarity(other: List<Float>): Double {
-    if (this.size != other.size || this.isEmpty()) return 0.0
+fun List<Float>.cosineSimilarity(to: List<Float>): Double {
+    if (this.size != to.size || this.isEmpty()) return 0.0
 
     var dotProduct = 0.0
     var normA = 0.0
@@ -11,7 +11,7 @@ fun List<Float>.cosineSimilarity(other: List<Float>): Double {
 
     for (i in this.indices) {
         val a = this[i]
-        val b = other[i]
+        val b = to[i]
         dotProduct += a * b
         normA += a * a
         normB += b * b
