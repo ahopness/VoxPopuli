@@ -40,17 +40,18 @@ INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '17385d85
 INSERT INTO `SourceEntity` (`name`, `logoUrl`, `category`, `feedUrl`, `lastFetched`, `muted`) VALUES
 -- 1. GENERAL
 ('BBC (Front Page)', 'https://upload.wikimedia.org/wikipedia/commons/6/65/BBC_logo_(1997-2021).svg', 'GENERAL', 'https://feeds.bbci.co.uk/news/rss.xml', '0', '0'),
---('CNN (Front Page)', 'https://images.seeklogo.com/logo-png/3/2/cnn-logo-png_seeklogo-32699.png', 'GENERAL', 'https://rss.cnn.com/rss/cnn_topstories.rss', '0', '0'),
+-- Timeouts --('CNN (Front Page)', 'https://images.seeklogo.com/logo-png/3/2/cnn-logo-png_seeklogo-32699.png', 'GENERAL', 'https://rss.cnn.com/rss/cnn_topstories.rss', '0', '0'),
 ('New York Times (Front Page)', 'https://upload.wikimedia.org/wikipedia/commons/5/58/NewYorkTimes.svg', 'GENERAL', 'https://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml', '0', '0'),
 ('New York Times (World)', 'https://upload.wikimedia.org/wikipedia/commons/5/58/NewYorkTimes.svg', 'GENERAL', 'https://rss.nytimes.com/services/xml/rss/nyt/World.xml', '0', '0'),
 ('Washington Post', 'https://upload.wikimedia.org/wikipedia/commons/b/b9/The_Washington_Post_logo.svg', 'GENERAL', 'https://feeds.washingtonpost.com/rss/world', '0', '0'),
-('Wall Street Journal', 'https://upload.wikimedia.org/wikipedia/commons/c/ca/Variety_logo.svg', 'GENERAL', 'https://www.wsj.com/news/rss-news-and-feeds', '0', '0'),
+('Wall Street Journal (World)', 'https://upload.wikimedia.org/wikipedia/commons/c/ca/Variety_logo.svg', 'GENERAL', 'https://feeds.content.dowjones.io/public/rss/RSSWorldNews', '0', '0'),
 
 -- 2. ENTERTAINMENT
 ('Variety', 'https://upload.wikimedia.org/wikipedia/commons/c/ca/Variety_logo.svg', 'ENTERTAINMENT', 'https://feeds.feedburner.com/ign/all', '0', '0'),
-('Billboard', 'https://upload.wikimedia.org/wikipedia/commons/2/27/Billboard_(magazine)_logo.svg', 'ENTERTAINMENT', 'https://www.billboard.com/articles/rss.xml', '0', '0'),
+-- 404s -- ('Billboard', 'https://upload.wikimedia.org/wikipedia/commons/2/27/Billboard_(magazine)_logo.svg', 'ENTERTAINMENT', 'https://www.billboard.com/articles/rss.xml', '0', '0'),
+('IndieWire', 'https://upload.wikimedia.org/wikipedia/commons/8/83/IndieWire_logo_2016.png', 'ENTERTAINMENT', 'https://www.indiewire.com/feed', '0', '0'),
 ('Pitchfork', 'https://upload.wikimedia.org/wikipedia/commons/7/76/Pitchfork_logo.svg', 'ENTERTAINMENT', 'https://pitchfork.com/rss/news', '0', '0'),
-('The Onion', 'https://theonion.com/wp-content/uploads/2024/07/site-logo.svg', 'ENTERTAINMENT', 'https://www.theonion.com/rss', '0', '0'),
+-- too many posts -- ('The Onion', 'https://theonion.com/wp-content/uploads/2024/07/site-logo.svg', 'ENTERTAINMENT', 'https://www.theonion.com/rss', '0', '0'),
 
 -- 3. GAMING
 ('Rock Paper Shotgun', 'https://upload.wikimedia.org/wikipedia/en/4/49/Rock%2C_Paper%2C_Shotgun.svg', 'GAMING', 'https://feeds.feedburner.com/RockPaperShotgun', '0', '0'),
@@ -59,14 +60,14 @@ INSERT INTO `SourceEntity` (`name`, `logoUrl`, `category`, `feedUrl`, `lastFetch
 ('IGN', 'https://upload.wikimedia.org/wikipedia/commons/4/47/IGN_logo.svg', 'GAMING', 'https://feeds.feedburner.com/ign/all', '0', '0'),
 
 -- 4. TECHNOLOGY
-('The Verge', 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/The_Verge_wordmark_2022.svg/960px-The_Verge_wordmark_2022.svg.png?_=20220915012757', 'TECHNOLOGY', 'https://www.theverge.com/rss/index.xml', '0', '0'),
+-- uses atom -- ('The Verge', 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/The_Verge_wordmark_2022.svg/960px-The_Verge_wordmark_2022.svg.png?_=20220915012757', 'TECHNOLOGY', 'https://www.theverge.com/rss/index.xml', '0', '0'),
 ('TechCrunch', 'https://upload.wikimedia.org/wikipedia/commons/b/b9/TechCrunch_logo.svg', 'TECHNOLOGY', 'https://techcrunch.com/feed/', '0', '0'),
 ('WIRED (Technology)', 'https://upload.wikimedia.org/wikipedia/commons/9/95/Wired_logo.svg', 'TECHNOLOGY', 'https://www.wired.com/feed/rss', '0', '0'),
 ('Ars Technica', 'https://upload.wikimedia.org/wikipedia/commons/5/51/Ars_Technica_logo_%282016%29.svg', 'TECHNOLOGY', 'https://feeds.arstechnica.com/arstechnica/index', '0', '0'),
 
 -- 5. PROGRAMMING
-('Hacker News', 'https://upload.wikimedia.org/wikipedia/commons/9/95/Font_Awesome_5_brands_hacker-news-square.svg', 'PROGRAMMING', 'https://news.ycombinator.com/rss', '0', '0'),
--- ('Hacker News (Alternative)', 'https://upload.wikimedia.org/wikipedia/commons/9/95/Font_Awesome_5_brands_hacker-news-square.svg', 'PROGRAMMING', 'https://hnrss.org/frontpage', '0', '0'),
+-- sometimes timeouts or doesnt show latest posts -- ('Hacker News', 'https://upload.wikimedia.org/wikipedia/commons/9/95/Font_Awesome_5_brands_hacker-news-square.svg', 'PROGRAMMING', 'https://news.ycombinator.com/rss', '0', '0'),
+('Hacker News', 'https://upload.wikimedia.org/wikipedia/commons/9/95/Font_Awesome_5_brands_hacker-news-square.svg', 'PROGRAMMING', 'https://hnrss.org/frontpage', '0', '0'),
 ('Lobsters', 'https://avatars.githubusercontent.com/u/32438445', 'PROGRAMMING', 'https://lobste.rs/rss', '0', '0'),
 ('Github', 'https://upload.wikimedia.org/wikipedia/commons/9/91/Octicons-mark-github.svg', 'PROGRAMMING', 'https://mshibanami.github.io/GitHubTrendingRSS/daily/all.xml', '0', '0'),
 ('XKCD', 'https://xkcd.com/s/0b7742.png', 'PROGRAMMING', 'https://xkcd.com/rss.xml', '0', '0'),
@@ -86,7 +87,7 @@ INSERT INTO `SourceEntity` (`name`, `logoUrl`, `category`, `feedUrl`, `lastFetch
 
 -- 8. SPORTS
 ('BBC (Sports)', 'https://upload.wikimedia.org/wikipedia/commons/6/65/BBC_logo_(1997-2021).svg', 'SPORTS', 'https://feeds.bbci.co.uk/sport/rss.xml', '0', '0'),
--- ('Yahoo', 'https://upload.wikimedia.org/wikipedia/commons/3/3a/Yahoo%21_%282019%29.svg', 'SPORTS', 'https://sports.yahoo.com/rss/', '0', '0'),
+('Wall Street Journal (Sports)', 'https://upload.wikimedia.org/wikipedia/commons/c/ca/Variety_logo.svg', 'SPORTS', 'https://feeds.content.dowjones.io/public/rss/rsssportsfeed', '0', '0'),
 ('ESPN', 'https://logosmarcas.net/wp-content/uploads/2020/12/ESPN-Logo-650x366.png', 'SPORTS', 'https://www.espn.com/espn/rss/news', '0', '0'),
 
 -- 9. FASHION
@@ -96,6 +97,6 @@ INSERT INTO `SourceEntity` (`name`, `logoUrl`, `category`, `feedUrl`, `lastFetch
 
 -- 10. POLITICS
 ('npr', 'https://upload.wikimedia.org/wikipedia/commons/2/2e/National_Public_Radio_logo_%282%29.svg', 'POLITICS', 'https://feeds.npr.org/1014/rss.xml', '0', '0'),
-('Politico', 'https://upload.wikimedia.org/wikipedia/commons/5/57/Politico-logo_2024_red.svg', 'POLITICS', 'https://www.politico.com/rss/politicopicks.xml', '0', '0'),
+('Wall Street Journal (Politics)', 'https://upload.wikimedia.org/wikipedia/commons/c/ca/Variety_logo.svg', 'POLITICS', 'https://feeds.content.dowjones.io/public/rss/socialpoliticsfeed', '0', '0'),
 ('Bloomberg (Politics)', 'https://upload.wikimedia.org/wikipedia/commons/9/9d/Bloomberg_logo-2556aaa618.svg', 'POLITICS', 'https://feeds.bloomberg.com/politics/news.rss', '0', '0'),
 ('New York Times (Politics)', 'https://upload.wikimedia.org/wikipedia/commons/5/58/NewYorkTimes.svg', 'POLITICS', 'https://www.nytimes.com/svc/collections/v1/publish/https://www.nytimes.com/section/politics/rss.xml', '0', '0');
