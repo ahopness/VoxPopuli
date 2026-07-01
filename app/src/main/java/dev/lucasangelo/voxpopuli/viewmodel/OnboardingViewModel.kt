@@ -48,17 +48,21 @@ class OnboardingViewModel @Inject constructor(
 
         var profileEmbedding: List<Float> = emptyList()
         withContext(Dispatchers.Main) { ignoredCategoriesStrings.forEach { category ->
-                val categoryEmbedding = textEmbedder.embed(category)
-                    .embeddingResult()
-                    .embeddings()
-                    .first()
-                    .floatEmbedding()
-                    .toList()
+            val categoryEmbedding = textEmbedder.embed(category)
+                .embeddingResult()
+                .embeddings()
+                .first()
+                .floatEmbedding()
+                .toList()
 
-                val alpha = 0.1f
+            val alpha = 0.1f
+            profileEmbedding = if (profileEmbedding.isEmpty()) {
+                categoryEmbedding
+            } else {
                 val u = profileEmbedding.map { it * (1f - alpha) }
                 val v = categoryEmbedding.map { it * alpha }
-                profileEmbedding = u.zip(v) { a, b -> a + b }
+                u.zip(v) { a, b -> a + b }
+            }
         } }
 
         repository.updateProfile(updatedProfile.copy(
