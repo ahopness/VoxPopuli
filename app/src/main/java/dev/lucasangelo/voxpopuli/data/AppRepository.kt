@@ -24,11 +24,14 @@ import kotlinx.coroutines.sync.withPermit
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import okio.IOException
 import java.time.Instant
 import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.coroutines.cancellation.CancellationException
+import kotlin.system.measureTimeMillis
 
 @Singleton
 class AppRepository @Inject constructor(
@@ -115,45 +118,62 @@ class AppRepository @Inject constructor(
             .url(source.feedUrl)
             .build()
 
-        okHttpClient
-            .newCall(request)
-            .execute()
-            .use { response ->
-                if (!response.isSuccessful) {
-                    Log.i("AppRepository::fetchSource@OkHttp3", response.code.toString())
-                    return@use
-                }
+        try {
+            var downloadTime = 0L
+            var parseTime = 0L
+            var processingTime = 0L
 
-                val xml = response.body.string()
-                val rss = parseRss(xml)
+            okHttpClient
+                .newCall(request)
+                .execute()
+                .use { response ->
+                    if (!response.isSuccessful) throw IOException("Unexpected code $response")
 
-                val semaphore = Semaphore(permits = 4)
-                coroutineScope {
-                    rss.channel.item.map {
-                        async { semaphore.withPermit {
-                            val imageUrl = fetchImageMetadata(it.link) ?: ""
-                            insertPost(
-                                PostEntity(
-                                    sourceId = source.id,
-                                    imageUrl = imageUrl,
-                                    author = it.author,
-                                    title = it.title,
-                                    description = it.description,
-                                    pubDate = it.pubDate,
-                                    link = it.link,
-                                    comments = if (it.comments.isDigitsOnly()) "" else it.comments, // NOTE: happens sometimes, no idea why
+                    val downloadStart = System.currentTimeMillis()
+                    val xml = response.body.string()
+                    downloadTime = System.currentTimeMillis() - downloadStart
+
+                    val parseStart = System.currentTimeMillis()
+                    val rss = parseRss(xml)
+                    parseTime = System.currentTimeMillis() - parseStart
+
+                    processingTime = measureTimeMillis { coroutineScope {
+                        rss.channel.item.map {
+                            async {
+                                val imageUrl = fetchImageMetadata(okHttpClient, it.link) ?: ""
+                                insertPost(
+                                    PostEntity(
+                                        sourceId = source.id,
+                                        imageUrl = imageUrl,
+                                        author = it.author,
+                                        title = it.title,
+                                        description = it.description,
+                                        pubDate = it.pubDate,
+                                        link = it.link,
+                                        comments = if (it.comments.isDigitsOnly()) "" else it.comments, // NOTE: happens sometimes, no idea why
+                                    )
                                 )
-                            )
-                            Log.i("AppRepository::fetchSource", "FOUND: ${it.title}")
-                        } }
-                    }.awaitAll()
-                }
+                            }
+                        }.awaitAll()
+                    } }
 
-                updateSource(
-                    source.copy(
-                        lastFetched = Instant.now()
+                    updateSource(
+                        source.copy(
+                            lastFetched = Instant.now()
+                        )
                     )
-                )
-            }
+                }
+            Log.i("VoxPopuli::AppRepository::fetchSource", "SUCCESS:" +
+                        "\tSource: ${source.feedUrl}\n" +
+                        "\tTotal: ${downloadTime + parseTime + processingTime}ms\n" +
+                        "\t\tDownload RSS: ${downloadTime}ms\n" +
+                        "\t\tParse XML: ${parseTime}ms\n" +
+                        "\t\tPost Processing: ${processingTime}ms"
+            )
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            Log.e("VoxPopuli::AppRepository::fetchSource", "FAILED: Something went wrong @ ${source.feedUrl}", e)
+        }
     }
 }
