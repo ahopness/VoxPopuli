@@ -19,6 +19,8 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.sync.Semaphore
+import kotlinx.coroutines.sync.withPermit
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -113,38 +115,45 @@ class AppRepository @Inject constructor(
             .url(source.feedUrl)
             .build()
 
-        val response = okHttpClient
+        okHttpClient
             .newCall(request)
             .execute()
+            .use { response ->
+                if (!response.isSuccessful) {
+                    Log.i("AppRepository::fetchSource@OkHttp3", response.code.toString())
+                    return@use
+                }
 
-        if (!response.isSuccessful) {
-            Log.i("AppRepository::fetchSource@OkHttp3", response.code.toString())
-            return@withContext
-        }
+                val xml = response.body.string()
+                val rss = parseRss(xml)
 
-        val xml = response.body.string()
-        val rss = parseRss(xml)
+                val semaphore = Semaphore(permits = 4)
+                coroutineScope {
+                    rss.channel.item.map {
+                        async { semaphore.withPermit {
+                            val imageUrl = fetchImageMetadata(it.link) ?: ""
+                            insertPost(
+                                PostEntity(
+                                    sourceId = source.id,
+                                    imageUrl = imageUrl,
+                                    author = it.author,
+                                    title = it.title,
+                                    description = it.description,
+                                    pubDate = it.pubDate,
+                                    link = it.link,
+                                    comments = if (it.comments.isDigitsOnly()) "" else it.comments, // NOTE: happens sometimes, no idea why
+                                )
+                            )
+                            Log.i("AppRepository::fetchSource", "FOUND: ${it.title}")
+                        } }
+                    }.awaitAll()
+                }
 
-        coroutineScope {
-            val deferred = rss.channel.item.map { async {
-                val imageUrl = fetchImageMetadata(it.link) ?: ""
-                insertPost(PostEntity(
-                    sourceId = source.id,
-                    imageUrl = imageUrl,
-                    author = it.author,
-                    title = it.title,
-                    description = it.description,
-                    pubDate = it.pubDate,
-                    link = it.link,
-                    comments = if (it.comments.isDigitsOnly()) "" else it.comments, // NOTE: happens sometimes, no idea why
-                ))
-                Log.i("AppRepository::fetchSource", "FOUND: ${it.title}")
-            } }
-            deferred.awaitAll()
-        }
-
-        updateSource(source.copy(
-            lastFetched = Instant.now()
-        ))
+                updateSource(
+                    source.copy(
+                        lastFetched = Instant.now()
+                    )
+                )
+            }
     }
 }

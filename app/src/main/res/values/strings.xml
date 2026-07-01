@@ -24,7 +24,7 @@
     <string name="read_comments">Read Comments</string>
     <string name="like_post">Like Post</string>
     <string name="bookmark_post">Bookmark Post</string>
-    <string name="onboarding_description">This is an all-in-one, quick and costumizable feed for your media outlets, take control back and tune everything your news to the likings.</string>
+    <string name="onboarding_description">This is an all-in-one, quick and customizable feed for your media outlets, take control back and tune everything your news to the liking.</string>
     <string name="onboarding_algorithm">Before we start, we need to tune your recommendation algorithm. Select below only the topics you are most interested in.</string>
     <string name="onboarding_enter_app">Enter Vox Populi</string>
     <string name="onboarding_setup_done">Now that everything is set up, you can start your experience, enjoy :)</string>
