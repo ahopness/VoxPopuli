@@ -25,6 +25,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.Duration
 import java.time.Instant
@@ -95,14 +96,14 @@ class FeedViewModel @AssistedInject constructor(
                 val timeSinceLastFetch = Duration.between(lastFetched, Instant.now())
 
                 if (timeSinceLastFetch < fetchingThreshold) {
-                    _loadingProgress.value++
+                    _loadingProgress.update { it+1 }
                     return
                 }
             }
 
             repository.fetchSource(source)
 
-            _loadingProgress.value++
+            _loadingProgress.update { it+1 }
         }
 
         try {
