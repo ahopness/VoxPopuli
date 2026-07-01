@@ -17,7 +17,7 @@ interface AppDao {
     suspend fun getSource(sourceId: Long): SourceEntity
     @Query("SELECT lastFetched FROM SourceEntity WHERE id = :sourceId")
     suspend fun getLastFetchedFromSource(sourceId: Long): Instant
-    @Query("SELECT * FROM SourceEntity")
+    @Query("SELECT * FROM SourceEntity ORDER BY name ASC")
     fun getAllSources(): Flow<List<SourceEntity>>
     @Query("SELECT * FROM SourceEntity")
     suspend fun getAllSourcesNow(): List<SourceEntity>

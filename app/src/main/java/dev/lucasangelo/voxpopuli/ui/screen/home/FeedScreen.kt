@@ -219,7 +219,8 @@ fun FeedScreen(
                                     viewModel.bookmarkPost(post)
                                 },
                                 onInteractedWith = {
-                                    viewModel.updateProfileEmbedding(post)
+                                    if (type == FeedType.CURATED)
+                                        viewModel.updateProfileEmbedding(post)
                                 }
                             )
                     }

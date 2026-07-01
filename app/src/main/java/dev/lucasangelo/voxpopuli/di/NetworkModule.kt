@@ -9,8 +9,6 @@ import okhttp3.logging.HttpLoggingInterceptor
 import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
-val appUserAgent = "VoxPopuli/1.0 (dev.lucas.angelo@gmail.com)"
-
 @Module
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
@@ -31,12 +29,12 @@ object NetworkModule {
             .addInterceptor(loggingInterceptor)
             .addInterceptor { chain ->
                 val request = chain.request().newBuilder()
-                    .header("User-Agent", appUserAgent)
+                    .header("User-Agent", "VoxPopuli/1.0 (dev.lucas.angelo@gmail.com)")
                     .build()
                 chain.proceed(request)
             }
-            .connectTimeout(15, TimeUnit.SECONDS)
-            .readTimeout(15, TimeUnit.SECONDS)
+            .connectTimeout(10, TimeUnit.SECONDS)
+            .readTimeout(10, TimeUnit.SECONDS)
             .build()
     }
 }
