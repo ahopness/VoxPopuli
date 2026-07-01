@@ -13,6 +13,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -31,6 +34,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import dev.lucasangelo.voxpopuli.R
+import dev.lucasangelo.voxpopuli.data.room.SourceCategory
 import dev.lucasangelo.voxpopuli.ui.component.PagerScaffold
 import dev.lucasangelo.voxpopuli.ui.component.PagerScaffoldContent
 import dev.lucasangelo.voxpopuli.util.sourceCategoryMetas
@@ -40,6 +44,7 @@ import io.github.kdroidfilter.composemediaplayer.InterruptionMode
 import io.github.kdroidfilter.composemediaplayer.VideoPlayerSurface
 import io.github.kdroidfilter.composemediaplayer.rememberVideoPlayerState
 import kotlinx.serialization.Serializable
+import kotlin.collections.emptyList
 
 @Serializable
 object OnboardingRoute
@@ -51,6 +56,8 @@ fun OnboardingScreen(
 ) {
     val settings by viewModel.settings.collectAsStateWithLifecycle()
     val profile by viewModel.profile.collectAsStateWithLifecycle()
+
+    val newIgnoredCategories = remember { SourceCategory.entries.toMutableStateList() }
 
     PagerScaffold(
         title = "",
@@ -119,18 +126,14 @@ fun OnboardingScreen(
                     ) {
                         sourceCategoryMetas.entries.forEach { entry ->
                             val category = entry.key
-                            val isSubscribed = !profile.ignoredCategories.contains(category)
+                            val isSubscribed = !newIgnoredCategories.contains(category)
 
                             Button(
                                 onClick = {
-                                    val newIgnoredCategories = if (isSubscribed) {
-                                        profile.ignoredCategories + category
-                                    } else {
-                                        profile.ignoredCategories - category
-                                    }
-                                    viewModel.updateProfileEmbeddings( updatedProfile =
-                                        profile.copy(ignoredCategories = newIgnoredCategories)
-                                    )
+                                        if (isSubscribed)
+                                            newIgnoredCategories.add(category)
+                                        else
+                                            newIgnoredCategories.remove(category)
                                 },
                                 colors = ButtonDefaults.buttonColors(
                                     containerColor = if (isSubscribed) Color.White else Color.Transparent
@@ -150,6 +153,10 @@ fun OnboardingScreen(
                     Text(stringResource(R.string.onboarding_setup_done))
 
                     Button(onClick = {
+                        viewModel.updateProfileEmbeddings( updatedProfile =
+                            profile.copy(ignoredCategories = newIgnoredCategories)
+                        )
+
                         if (settings.showOnboarding) {
                             viewModel.updateSettings(settings.copy(showOnboarding = false))
 
