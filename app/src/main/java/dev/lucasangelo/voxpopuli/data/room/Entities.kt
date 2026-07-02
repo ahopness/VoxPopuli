@@ -4,6 +4,7 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import dev.lucasangelo.voxpopuli.R
 import kotlinx.serialization.Serializable
 import java.time.Instant
 
@@ -35,6 +36,18 @@ enum class SourceCategory {
     FASHION,
     POLITICS
 }
+val sourceCategoryInfo: Map<SourceCategory, Pair<Int, Int>> = mapOf(
+    SourceCategory.GENERAL to Pair(R.drawable.link_general, R.string.category_general),
+    SourceCategory.ENTERTAINMENT to Pair(R.drawable.link_entertainment, R.string.category_entertainment),
+    SourceCategory.GAMING to Pair(R.drawable.link_gaming, R.string.category_gaming),
+    SourceCategory.TECHNOLOGY to Pair(R.drawable.link_technology, R.string.category_technology),
+    SourceCategory.PROGRAMMING to Pair(R.drawable.link_programming, R.string.category_programming),
+    SourceCategory.BUSINESS to Pair(R.drawable.link_buisness, R.string.category_business),
+    SourceCategory.SCIENCE to Pair(R.drawable.link_science, R.string.category_science),
+    SourceCategory.SPORTS to Pair(R.drawable.link_sports, R.string.category_sports),
+    SourceCategory.FASHION to Pair(R.drawable.link_fashion, R.string.category_fashion),
+    SourceCategory.POLITICS to Pair(R.drawable.link_politics, R.string.category_politics),
+)
 
 @Entity(
     foreignKeys = [
@@ -70,4 +83,3 @@ data class PostEntity(
 
     val bookmarked: Boolean = false,
 )
-

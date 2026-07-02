@@ -14,13 +14,15 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import dev.lucasangelo.voxpopuli.R
 import dev.lucasangelo.voxpopuli.data.datastore.TabSelection
+import dev.lucasangelo.voxpopuli.data.room.sourceCategoryInfo
 import dev.lucasangelo.voxpopuli.ui.component.FloatingNavigationActionItem
 import dev.lucasangelo.voxpopuli.ui.component.FloatingNavigationBar
-import dev.lucasangelo.voxpopuli.ui.screen.home.FeedScreen
-import dev.lucasangelo.voxpopuli.ui.screen.home.FeedType
+import dev.lucasangelo.voxpopuli.ui.screen.home.FeedBookmarksScreen
+import dev.lucasangelo.voxpopuli.ui.screen.home.FeedCategoryScreen
+import dev.lucasangelo.voxpopuli.ui.screen.home.FeedCuratedScreen
+import dev.lucasangelo.voxpopuli.ui.screen.home.FeedNewScreen
+import dev.lucasangelo.voxpopuli.ui.screen.home.FeedSourceScreen
 import dev.lucasangelo.voxpopuli.ui.screen.home.SettingsScreen
-import dev.lucasangelo.voxpopuli.util.feedTypeMetas
-import dev.lucasangelo.voxpopuli.util.sourceCategoryMetas
 import dev.lucasangelo.voxpopuli.viewmodel.HomeViewModel
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
@@ -36,60 +38,65 @@ fun HomeScreen(
 ) {
     Box(Modifier.fillMaxSize()) {
         val settings by viewModel.settings.collectAsStateWithLifecycle()
+        if(settings == null) return
 
-        val sourcesList by viewModel.sources.collectAsStateWithLifecycle()
-        val sourcesMap = remember(sourcesList) { sourcesList.associateBy { it.id } }
+        val sources by viewModel.sources.collectAsStateWithLifecycle()
 
-        val settingsTab = remember {
-            HomeTabItem(
-                id = "settings",
-                icon = R.drawable.icon_settings,
-                title = R.string.feed_settings,
-                destination = { SettingsScreen() }
+        val standardTabList = remember {
+            listOf(
+                HomeTabItem(
+                    id = "settings",
+                    icon = R.drawable.icon_settings,
+                    title = R.string.feed_settings,
+                    destination = { SettingsScreen() }
+                ),
+                HomeTabItem(
+                    id = "bookmarks",
+                    icon = R.drawable.icon_bookmark,
+                    title = R.string.feed_bookmarks,
+                    destination = { FeedBookmarksScreen() }
+                ),
+                HomeTabItem(
+                    id = "curated",
+                    icon = R.drawable.icon_home,
+                    title = R.string.feed_curated,
+                    destination = { FeedCuratedScreen() }
+                ),
+                HomeTabItem(
+                    id = "new",
+                    icon = R.drawable.icon_star,
+                    title = R.string.feed_new,
+                    destination = { FeedNewScreen() }
+                ),
             )
         }
-        val standardTabList = remember(sourcesMap) {
-            feedTypeMetas.map { HomeTabItem(
-                    id = "standard_${it.key.name}",
-                    icon = it.value.first,
-                    title = it.value.second,
-                    destination = { FeedScreen(
-                        type = it.key,
-                        sourcesMap,
-                    ) }
-            ) }
-        }
-        val categoryTabList = remember(sourcesMap) {
-            sourceCategoryMetas.map { HomeTabItem(
-                    id= "category_${it.key.name}",
-                    icon = it.value.first,
-                    title = it.value.second,
-                    destination = { FeedScreen(
-                        type = FeedType.CATEGORY,
-                        sourcesMap,
+        val categoryTabList = remember {
+            sourceCategoryInfo.map { HomeTabItem(
+                id= "category_${it.key.name}",
+                icon = it.value.first,
+                title = it.value.second,
+                destination = { FeedCategoryScreen(
                         customCategory = it.key
-                    ) }
-            ) }
-        }
-        val sourceTabList = remember(sourcesList) {
-            sourcesList.map { HomeTabItem(
-                id = "source_${it.id}",
-                icon = it.logoUrl,
-                title = it.name,
-                destination = { FeedScreen(
-                    type = FeedType.SOURCE,
-                    sourcesMap,
-                    customSource = it,
                 ) }
             ) }
         }
-        // TODO: 'add new source' button
+        val sourceTabList = remember(sources) {
+            sources.map { HomeTabItem(
+                id = "source_${it.id}",
+                icon = it.logoUrl,
+                title = it.name,
+                destination = { FeedSourceScreen(
+                        customSource = it,
+                ) }
+            ) }
+        }
 
-        val tabList = listOf(settingsTab) +
-            when (settings.tabSelection) {
+        val tabList = remember(settings, sourceTabList) {
+            when (settings!!.tabSelection) {
                 TabSelection.CATEGORIES -> standardTabList + categoryTabList
                 TabSelection.SOURCES -> standardTabList + sourceTabList
             }
+        }
 
         val pagerState = rememberPagerState(
             initialPage = 2,

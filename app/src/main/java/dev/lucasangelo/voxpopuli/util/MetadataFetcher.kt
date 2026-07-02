@@ -4,7 +4,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import java.net.URL
 import java.util.regex.Pattern
 
 suspend fun fetchImageMetadata(client: OkHttpClient, urlString: String): String? = withContext(Dispatchers.IO) {

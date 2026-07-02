@@ -18,6 +18,8 @@ import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.Density
 import androidx.core.view.WindowCompat
 
+val overlayTransparencyColor = Color.Black
+
 private val DarkColorScheme = darkColorScheme(
     primary = Color(0xFFE0E0E0),
     onPrimary = Color(0xFF1C1B1F),
@@ -72,7 +74,7 @@ fun VoxPopuliTheme(
     ) {
         CompositionLocalProvider(
             LocalRippleConfiguration provides rippleConfiguration,
-//            LocalDensity provides customDensity
+            LocalDensity provides customDensity
         ) {
             Surface(
                 modifier = Modifier.fillMaxSize(),

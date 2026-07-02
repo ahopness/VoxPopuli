@@ -27,6 +27,8 @@ interface AppDao {
     suspend fun updateSource(source: SourceEntity)
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertPosts(posts: List<PostEntity>)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertPost(post: PostEntity)
     @Query( value =
         "SELECT PostEntity.* FROM PostEntity " +

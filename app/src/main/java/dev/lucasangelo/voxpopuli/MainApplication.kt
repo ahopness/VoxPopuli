@@ -18,11 +18,7 @@ class MainApplication : Application(), SingletonImageLoader.Factory {
     override fun newImageLoader(context: PlatformContext): ImageLoader {
         return ImageLoader.Builder(context)
             .components {
-                add(
-                    OkHttpNetworkFetcherFactory(
-                        callFactory = { okHttpClient }
-                    )
-                )
+                add(OkHttpNetworkFetcherFactory(callFactory = { okHttpClient }))
                 add(SvgDecoder.Factory())
             }
             .build()

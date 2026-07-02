@@ -21,7 +21,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import dev.lucasangelo.voxpopuli.R
-import dev.lucasangelo.voxpopuli.util.overlayTransparencyColor
+import dev.lucasangelo.voxpopuli.ui.overlayTransparencyColor
 
 val floatingTopBarPadding = 120.dp
 val floatingTopBarButtonSize = 72.dp

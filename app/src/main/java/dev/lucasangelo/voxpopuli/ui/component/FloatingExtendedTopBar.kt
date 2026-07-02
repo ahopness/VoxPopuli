@@ -41,7 +41,7 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
 import dev.lucasangelo.voxpopuli.R
-import dev.lucasangelo.voxpopuli.util.overlayTransparencyColor
+import dev.lucasangelo.voxpopuli.ui.overlayTransparencyColor
 import kotlin.math.roundToInt
 
 val floatingExtendedTopBarPadding = 420.dp

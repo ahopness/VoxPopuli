@@ -19,8 +19,6 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.sync.Semaphore
-import kotlinx.coroutines.sync.withPermit
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -67,52 +65,6 @@ class AppRepository @Inject constructor(
     suspend fun updateSource(source: SourceEntity) =
         dao.updateSource(source)
 
-    suspend fun insertPost(post: PostEntity) {
-        if (post.link.isEmpty())
-            return
-
-        val id = post.title.hashCode()
-
-        var publishedInstant: Instant
-        try {
-            publishedInstant = OffsetDateTime.parse(
-                post.pubDate,
-                DateTimeFormatter.RFC_1123_DATE_TIME
-            ).toInstant()
-        } catch (e: Exception) {
-            return
-        }
-
-        val embedding = textEmbedder.embed(post.title)
-            .embeddingResult()
-            .embeddings()
-            .first()
-            .floatEmbedding()
-            .toList()
-
-        dao.insertPost(
-            post.copy(
-                id = id,
-                publishedAt = publishedInstant,
-                embedding = embedding
-            )
-        )
-    }
-    fun getAllPosts(): Flow<List<PostEntity>> =
-        dao.getAllPosts()
-    fun getAllNewPosts(): Flow<List<PostEntity>> =
-        dao.getAllNewPosts()
-    fun getAllPostsIn(category: SourceCategory): Flow<List<PostEntity>> =
-        dao.getAllPostsIn(category)
-    fun getAllPostsBy(sourceId: Long): Flow<List<PostEntity>> =
-        dao.getAllPostsBy(sourceId)
-    fun getAllBookmarkedPosts(): Flow<List<PostEntity>> =
-        dao.getAllBookmarkedPosts()
-    suspend fun deletePost(post: PostEntity) =
-        dao.deletePost(post)
-    suspend fun updatePost(post: PostEntity) =
-        dao.updatePost(post)
-
     suspend fun fetchSource(source: SourceEntity) = withContext(Dispatchers.IO) {
         val request = Request.Builder()
             .url(source.feedUrl)
@@ -137,25 +89,47 @@ class AppRepository @Inject constructor(
                     val rss = parseRss(xml)
                     parseTime = System.currentTimeMillis() - parseStart
 
-                    processingTime = measureTimeMillis { coroutineScope {
-                        rss.channel.item.map {
-                            async {
-                                val imageUrl = fetchImageMetadata(okHttpClient, it.link) ?: ""
-                                insertPost(
+                    processingTime = measureTimeMillis {
+                        val postsToInsert = coroutineScope {
+                            rss.channel.item.map { item -> async {
+                                val imageUrl = fetchImageMetadata(okHttpClient, item.link) ?: ""
+
+                                val id = item.title.hashCode()
+
+                                val publishedInstant = try {
+                                    OffsetDateTime.parse(item.pubDate, DateTimeFormatter.RFC_1123_DATE_TIME).toInstant()
+                                } catch (e: Exception) {
+                                    return@async null
+                                }
+
+                                val embedding = textEmbedder.embed(item.title)
+                                    .embeddingResult()
+                                    .embeddings()
+                                    .first()
+                                    .floatEmbedding()
+                                    .toList()
+
+                                if (item.link.isNotEmpty() && publishedInstant != null) {
                                     PostEntity(
+                                        id,
+                                        publishedAt = publishedInstant,
                                         sourceId = source.id,
-                                        imageUrl = imageUrl,
-                                        author = it.author,
-                                        title = it.title,
-                                        description = it.description,
-                                        pubDate = it.pubDate,
-                                        link = it.link,
-                                        comments = if (it.comments.isDigitsOnly()) "" else it.comments, // NOTE: happens sometimes, no idea why
+                                        imageUrl,
+                                        item.author,
+                                        item.title,
+                                        item.description,
+                                        item.pubDate,
+                                        item.link,
+                                        comments = if (item.comments.isDigitsOnly()) "" else item.comments,
+                                        embedding
                                     )
-                                )
-                            }
-                        }.awaitAll()
-                    } }
+                                } else {
+                                    return@async null
+                                }
+                            } }.awaitAll().filterNotNull()
+                        }
+                        dao.insertPosts(postsToInsert)
+                    }
 
                     updateSource(
                         source.copy(
@@ -163,17 +137,33 @@ class AppRepository @Inject constructor(
                         )
                     )
                 }
-            Log.i("VoxPopuli::AppRepository::fetchSource", "SUCCESS:" +
-                        "\tSource: ${source.feedUrl}\n" +
-                        "\tTotal: ${downloadTime + parseTime + processingTime}ms\n" +
-                        "\t\tDownload RSS: ${downloadTime}ms\n" +
-                        "\t\tParse XML: ${parseTime}ms\n" +
-                        "\t\tPost Processing: ${processingTime}ms"
+            Log.i("VoxPopuli::AppRepository::fetchSource", "SUCCESS: " +
+                    "Source fetched at @ ${source.feedUrl}\n" +
+                    "\tTotal: ${downloadTime + parseTime + processingTime}ms\n" +
+                    "\t\tDownload RSS: ${downloadTime}ms\n" +
+                    "\t\tParse XML: ${parseTime}ms\n" +
+                    "\t\tPost Processing: ${processingTime}ms"
             )
         } catch (e: CancellationException) {
+            Log.e("VoxPopuli::AppRepository::fetchSource", "SAFE FAIL: Coroutine canceled @ ${source.feedUrl}", e)
             throw e
         } catch (e: Exception) {
             Log.e("VoxPopuli::AppRepository::fetchSource", "FAILED: Something went wrong @ ${source.feedUrl}", e)
         }
     }
+
+    fun getAllPosts(): Flow<List<PostEntity>> =
+        dao.getAllPosts()
+    fun getAllNewPosts(): Flow<List<PostEntity>> =
+        dao.getAllNewPosts()
+    fun getAllPostsIn(category: SourceCategory): Flow<List<PostEntity>> =
+        dao.getAllPostsIn(category)
+    fun getAllPostsBy(sourceId: Long): Flow<List<PostEntity>> =
+        dao.getAllPostsBy(sourceId)
+    fun getAllBookmarkedPosts(): Flow<List<PostEntity>> =
+        dao.getAllBookmarkedPosts()
+    suspend fun deletePost(post: PostEntity) =
+        dao.deletePost(post)
+    suspend fun updatePost(post: PostEntity) =
+        dao.updatePost(post)
 }

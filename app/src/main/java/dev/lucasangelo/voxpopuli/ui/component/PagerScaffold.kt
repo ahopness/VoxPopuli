@@ -27,7 +27,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import dev.lucasangelo.voxpopuli.util.overlayTransparencyColor
+import dev.lucasangelo.voxpopuli.ui.overlayTransparencyColor
 import kotlinx.coroutines.launch
 
 @Composable

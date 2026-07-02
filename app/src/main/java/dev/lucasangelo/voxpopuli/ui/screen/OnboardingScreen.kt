@@ -13,7 +13,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
@@ -35,16 +34,15 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import dev.lucasangelo.voxpopuli.R
 import dev.lucasangelo.voxpopuli.data.room.SourceCategory
+import dev.lucasangelo.voxpopuli.data.room.sourceCategoryInfo
 import dev.lucasangelo.voxpopuli.ui.component.PagerScaffold
 import dev.lucasangelo.voxpopuli.ui.component.PagerScaffoldContent
-import dev.lucasangelo.voxpopuli.util.sourceCategoryMetas
 import dev.lucasangelo.voxpopuli.viewmodel.OnboardingViewModel
 import io.github.kdroidfilter.composemediaplayer.AudioMode
 import io.github.kdroidfilter.composemediaplayer.InterruptionMode
 import io.github.kdroidfilter.composemediaplayer.VideoPlayerSurface
 import io.github.kdroidfilter.composemediaplayer.rememberVideoPlayerState
 import kotlinx.serialization.Serializable
-import kotlin.collections.emptyList
 
 @Serializable
 object OnboardingRoute
@@ -55,13 +53,15 @@ fun OnboardingScreen(
     viewModel: OnboardingViewModel = hiltViewModel()
 ) {
     val settings by viewModel.settings.collectAsStateWithLifecycle()
+    if (settings == null) return
     val profile by viewModel.profile.collectAsStateWithLifecycle()
+    if (profile == null) return
 
     val newIgnoredCategories = remember { SourceCategory.entries.toMutableStateList() }
 
     PagerScaffold(
         title = "",
-        canGoBack = !settings.showOnboarding,
+        canGoBack = !(settings!!.showOnboarding),
         onGoBackRequest = { rootNavController.popBackStack() },
         pageCount = 4,
         prelude = {
@@ -124,7 +124,7 @@ fun OnboardingScreen(
                     FlowRow(
                         horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterHorizontally),
                     ) {
-                        sourceCategoryMetas.entries.forEach { entry ->
+                        sourceCategoryInfo.entries.forEach { entry ->
                             val category = entry.key
                             val isSubscribed = !newIgnoredCategories.contains(category)
 
@@ -153,12 +153,12 @@ fun OnboardingScreen(
                     Text(stringResource(R.string.onboarding_setup_done))
 
                     Button(onClick = {
-                        viewModel.updateProfileEmbeddings( updatedProfile =
-                            profile.copy(ignoredCategories = newIgnoredCategories)
+                        viewModel.initProfileEmbeddings( updatedProfile =
+                            profile!!.copy(ignoredCategories = newIgnoredCategories)
                         )
 
-                        if (settings.showOnboarding) {
-                            viewModel.updateSettings(settings.copy(showOnboarding = false))
+                        if (settings!!.showOnboarding) {
+                            viewModel.updateSettings(settings!!.copy(showOnboarding = false))
 
                             rootNavController.navigate(HomeRoute) {
                                 popUpTo(OnboardingRoute) { inclusive = true }
