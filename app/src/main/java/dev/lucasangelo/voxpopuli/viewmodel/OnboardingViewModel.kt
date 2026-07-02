@@ -9,6 +9,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dev.lucasangelo.voxpopuli.data.AppRepository
 import dev.lucasangelo.voxpopuli.data.datastore.Profile
 import dev.lucasangelo.voxpopuli.data.datastore.Settings
+import dev.lucasangelo.voxpopuli.data.room.SourceCategory
 import dev.lucasangelo.voxpopuli.data.room.sourceCategoryInfo
 import dev.lucasangelo.voxpopuli.viewmodel.controller.ProfileController
 import dev.lucasangelo.voxpopuli.viewmodel.controller.SettingsController
@@ -31,12 +32,14 @@ class OnboardingViewModel @Inject constructor(
     fun updateProfile(profile: Profile) = profileController.updateProfile(profile)
 
     fun initProfileEmbeddings(updatedProfile: Profile) = viewModelScope.launch(Dispatchers.IO) {
-        val ignoredCategoriesStrings = updatedProfile.ignoredCategories.map {
+        val subscribedCategories = SourceCategory.entries
+            .filterNot { updatedProfile.ignoredCategories.contains(it) }
+        val subscribedCategoriesStrings = subscribedCategories.map {
             context.getString(sourceCategoryInfo[it]!!.second)
         }
 
         var profileEmbedding: List<Float> = emptyList()
-        ignoredCategoriesStrings.forEach { category ->
+        subscribedCategoriesStrings.forEach { category ->
             val categoryEmbedding = textEmbedder.embed(category)
                 .embeddingResult()
                 .embeddings()

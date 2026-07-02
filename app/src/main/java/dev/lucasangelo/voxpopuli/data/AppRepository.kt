@@ -19,6 +19,8 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -65,6 +67,7 @@ class AppRepository @Inject constructor(
     suspend fun updateSource(source: SourceEntity) =
         dao.updateSource(source)
 
+    private val embedderMutex = Mutex()
     suspend fun fetchSource(source: SourceEntity) = withContext(Dispatchers.IO) {
         val request = Request.Builder()
             .url(source.feedUrl)
@@ -102,12 +105,14 @@ class AppRepository @Inject constructor(
                                     return@async null
                                 }
 
-                                val embedding = textEmbedder.embed(item.title)
-                                    .embeddingResult()
-                                    .embeddings()
-                                    .first()
-                                    .floatEmbedding()
-                                    .toList()
+                                val embedding = embedderMutex.withLock {
+                                    textEmbedder.embed(item.title)
+                                        .embeddingResult()
+                                        .embeddings()
+                                        .first()
+                                        .floatEmbedding()
+                                        .toList()
+                                }
 
                                 if (item.link.isNotEmpty() && publishedInstant != null) {
                                     PostEntity(

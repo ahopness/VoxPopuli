@@ -73,12 +73,16 @@ class FeedController(
 
         val alpha = 0.1f
 
-        val u = profile.embedding.map { it * (1f - alpha) }
-        val v = post.embedding.map { it * alpha }
+        val newEmbedding =
+            if (profile.embedding.isEmpty()) {
+                post.embedding
+            } else {
+                val u = profile.embedding.map { it * (1f - alpha) }
+                val v = post.embedding.map { it * alpha }
+                u.zip(v) { a, b -> a + b }
+            }
 
-        repository.updateProfile(profile.copy(
-            embedding = u.zip(v) { a, b -> a + b }
-        ))
+        repository.updateProfile(profile.copy(embedding = newEmbedding))
     }
 
     fun bookmarkPost(post: PostEntity) = scope.launch {

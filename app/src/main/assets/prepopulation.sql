@@ -43,7 +43,7 @@ INSERT INTO `SourceEntity` (`name`, `logoUrl`, `category`, `feedUrl`, `lastFetch
 -- Timeouts --('CNN (Front Page)', 'https://images.seeklogo.com/logo-png/3/2/cnn-logo-png_seeklogo-32699.png', 'GENERAL', 'https://rss.cnn.com/rss/cnn_topstories.rss', '0', '0'),
 ('New York Times (Front Page)', 'https://upload.wikimedia.org/wikipedia/commons/5/58/NewYorkTimes.svg', 'GENERAL', 'https://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml', '0', '0'),
 ('New York Times (World)', 'https://upload.wikimedia.org/wikipedia/commons/5/58/NewYorkTimes.svg', 'GENERAL', 'https://rss.nytimes.com/services/xml/rss/nyt/World.xml', '0', '0'),
-('Washington Post', 'https://upload.wikimedia.org/wikipedia/commons/b/b9/The_Washington_Post_logo.svg', 'GENERAL', 'https://feeds.washingtonpost.com/rss/world', '0', '0'),
+-- Timeouts --('Washington Post', 'https://upload.wikimedia.org/wikipedia/commons/b/b9/The_Washington_Post_logo.svg', 'GENERAL', 'https://feeds.washingtonpost.com/rss/world', '0', '0'),
 ('Wall Street Journal (World)', 'https://upload.wikimedia.org/wikipedia/commons/c/ca/Variety_logo.svg', 'GENERAL', 'https://feeds.content.dowjones.io/public/rss/RSSWorldNews', '0', '0'),
 
 -- 2. ENTERTAINMENT
@@ -74,7 +74,7 @@ INSERT INTO `SourceEntity` (`name`, `logoUrl`, `category`, `feedUrl`, `lastFetch
 
 -- 6. BUSINESS
 ('Bloomberg (Markets)', 'https://upload.wikimedia.org/wikipedia/commons/9/9d/Bloomberg_logo-2556aaa618.svg', 'BUSINESS', 'https://feeds.bloomberg.com/markets/news.rss', '0', '0'),
-('Bloomberg (Wealth)', 'https://upload.wikimedia.org/wikipedia/commons/9/9d/Bloomberg_logo-2556aaa618.svg', 'BUSINESS', 'https://feeds.bloomberg.com/wealth/news.rss', '0', '0'),
+-- ('Bloomberg (Wealth)', 'https://upload.wikimedia.org/wikipedia/commons/9/9d/Bloomberg_logo-2556aaa618.svg', 'BUSINESS', 'https://feeds.bloomberg.com/wealth/news.rss', '0', '0'),
 ('Bloomberg (Economics)', 'https://upload.wikimedia.org/wikipedia/commons/9/9d/Bloomberg_logo-2556aaa618.svg', 'BUSINESS', 'https://feeds.bloomberg.com/economics/news.rss', '0', '0'),
 ('New York Times (Business)', 'https://upload.wikimedia.org/wikipedia/commons/5/58/NewYorkTimes.svg', 'BUSINESS', 'https://rss.nytimes.com/services/xml/rss/nyt/Business.xml', '0', '0'),
 ('Forbes', 'https://upload.wikimedia.org/wikipedia/commons/d/db/Forbes_logo.svg', 'BUSINESS', 'https://www.forbes.com/business/feed/', '0', '0'),
@@ -96,7 +96,7 @@ INSERT INTO `SourceEntity` (`name`, `logoUrl`, `category`, `feedUrl`, `lastFetch
 ('New York Times (Fashion)', 'https://upload.wikimedia.org/wikipedia/commons/5/58/NewYorkTimes.svg', 'FASHION', 'https://rss.nytimes.com/services/xml/rss/nyt/FashionandStyle.xml', '0', '0'),
 
 -- 10. POLITICS
-('npr', 'https://upload.wikimedia.org/wikipedia/commons/2/2e/National_Public_Radio_logo_%282%29.svg', 'POLITICS', 'https://feeds.npr.org/1014/rss.xml', '0', '0'),
+-- takes too long to process -- ('npr', 'https://upload.wikimedia.org/wikipedia/commons/2/2e/National_Public_Radio_logo_%282%29.svg', 'POLITICS', 'https://feeds.npr.org/1014/rss.xml', '0', '0'),
 ('Wall Street Journal (Politics)', 'https://upload.wikimedia.org/wikipedia/commons/c/ca/Variety_logo.svg', 'POLITICS', 'https://feeds.content.dowjones.io/public/rss/socialpoliticsfeed', '0', '0'),
 ('Bloomberg (Politics)', 'https://upload.wikimedia.org/wikipedia/commons/9/9d/Bloomberg_logo-2556aaa618.svg', 'POLITICS', 'https://feeds.bloomberg.com/politics/news.rss', '0', '0'),
 ('New York Times (Politics)', 'https://upload.wikimedia.org/wikipedia/commons/5/58/NewYorkTimes.svg', 'POLITICS', 'https://www.nytimes.com/svc/collections/v1/publish/https://www.nytimes.com/section/politics/rss.xml', '0', '0');
