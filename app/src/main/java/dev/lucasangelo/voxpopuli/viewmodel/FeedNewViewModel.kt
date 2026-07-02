@@ -16,8 +16,6 @@ import javax.inject.Inject
 class FeedNewViewModel @Inject constructor(
     private val repository: AppRepository
 ) : ViewModel() {
-    val profileController = ProfileController(repository, viewModelScope)
-
     private val feedController = FeedController(
         repository,
         viewModelScope,

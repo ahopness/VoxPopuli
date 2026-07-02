@@ -15,7 +15,6 @@ import javax.inject.Inject
 class FeedBookmarksViewModel @Inject constructor(
     private val repository: AppRepository
 ) : ViewModel() {
-
     private val feedController = FeedController(
         repository,
         viewModelScope,
