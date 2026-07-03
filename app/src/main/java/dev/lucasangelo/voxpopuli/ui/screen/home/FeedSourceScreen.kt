@@ -6,11 +6,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.draw.scale
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import coil3.compose.AsyncImage
 import dev.lucasangelo.voxpopuli.data.room.SourceEntity
 import dev.lucasangelo.voxpopuli.ui.component.Feed
+import dev.lucasangelo.voxpopuli.ui.component.MonochromeAsyncImage
 import dev.lucasangelo.voxpopuli.viewmodel.FeedSourceViewModel
 import kotlinx.coroutines.launch
 
@@ -39,12 +40,14 @@ fun FeedSourceScreen(
     Feed(
         topBarTitle = customSource.name,
         topBarIconContent = { modifier, _ ->
-            AsyncImage(
+            MonochromeAsyncImage(
                 model = customSource.logoUrl,
                 contentDescription = null,
-                modifier = modifier.clickable(onClick = {
-                    coroutineScope.launch { listState.animateScrollToItem(0) }
-                })
+                modifier = modifier
+                    .scale(0.8f)
+                    .clickable(onClick = {
+                        coroutineScope.launch { listState.animateScrollToItem(0) }
+                    } )
             )
         },
         isLoading,

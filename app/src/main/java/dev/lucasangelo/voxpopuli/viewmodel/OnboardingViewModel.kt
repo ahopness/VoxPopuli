@@ -9,12 +9,9 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dev.lucasangelo.voxpopuli.data.AppRepository
 import dev.lucasangelo.voxpopuli.data.datastore.Profile
 import dev.lucasangelo.voxpopuli.data.datastore.Settings
-import dev.lucasangelo.voxpopuli.data.room.SourceCategory
-import dev.lucasangelo.voxpopuli.data.room.sourceCategoryInfo
+import dev.lucasangelo.voxpopuli.viewmodel.controller.EmbeddingController
 import dev.lucasangelo.voxpopuli.viewmodel.controller.ProfileController
 import dev.lucasangelo.voxpopuli.viewmodel.controller.SettingsController
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -29,37 +26,7 @@ class OnboardingViewModel @Inject constructor(
 
     private val profileController = ProfileController(repository, viewModelScope)
     val profile = profileController.profile
-    fun updateProfile(profile: Profile) = profileController.updateProfile(profile)
 
-    fun initProfileEmbeddings(updatedProfile: Profile) = viewModelScope.launch(Dispatchers.IO) {
-        val subscribedCategories = SourceCategory.entries
-            .filterNot { updatedProfile.ignoredCategories.contains(it) }
-        val subscribedCategoriesStrings = subscribedCategories.map {
-            context.getString(sourceCategoryInfo[it]!!.second)
-        }
-
-        var profileEmbedding: List<Float> = emptyList()
-        subscribedCategoriesStrings.forEach { category ->
-            val categoryEmbedding = textEmbedder.embed(category)
-                .embeddingResult()
-                .embeddings()
-                .first()
-                .floatEmbedding()
-                .toList()
-
-            profileEmbedding =
-                if (profileEmbedding.isEmpty()) {
-                    categoryEmbedding
-                } else {
-                    val alpha = 0.1f
-                    val u = profileEmbedding.map { it * (1f - alpha) }
-                    val v = categoryEmbedding.map { it * alpha }
-                    u.zip(v) { a, b -> a + b }
-                }
-        }
-
-        updateProfile(updatedProfile.copy(
-            embedding = profileEmbedding
-        ) )
-    }
+    private val embeddingController = EmbeddingController(context, repository, viewModelScope, textEmbedder)
+    fun updateProfileEmbedding(updatedProfile: Profile) = embeddingController.updateProfileEmbedding(updatedProfile)
 }

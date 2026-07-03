@@ -153,7 +153,7 @@ fun OnboardingScreen(
                     Text(stringResource(R.string.onboarding_setup_done))
 
                     Button(onClick = {
-                        viewModel.initProfileEmbeddings( updatedProfile =
+                        viewModel.updateProfileEmbedding( updatedProfile =
                             profile!!.copy(ignoredCategories = newIgnoredCategories)
                         )
 

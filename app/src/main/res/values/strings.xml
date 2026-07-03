@@ -29,4 +29,12 @@
     <string name="onboarding_enter_app">Enter Vox Populi</string>
     <string name="onboarding_setup_done">Now that everything is set up, you can start your experience, enjoy :)</string>
     <string name="feed_error">Something went wrong:</string>
+    <string name="actions">Actions</string>
+    <string name="confirm">Confirm</string>
+    <string name="settings_retune">Retune \'For You\' Page</string>
+    <string name="settings_retune_choose">Select below only the topics you are most interested in.</string>
+    <string name="settings_tabs">Change Tab Selection</string>
+    <string name="settings_tabs_choose">Choose how you want your tabs</string>
+    <string name="settings_tabs_categories">Show Categories</string>
+    <string name="settings_tabs_sources">Show Sources</string>
 </resources>
