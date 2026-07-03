@@ -30,6 +30,8 @@ interface AppDao {
     suspend fun insertPosts(posts: List<PostEntity>)
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertPost(post: PostEntity)
+    @Query("SELECT id FROM PostEntity WHERE id IN (:ids)")
+    suspend fun getPostsWith(ids: List<Int>): List<Int>
     @Query( value =
         "SELECT PostEntity.* FROM PostEntity " +
         "INNER JOIN  SourceEntity on SourceEntity.id = PostEntity.sourceId " +

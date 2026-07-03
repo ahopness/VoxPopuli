@@ -23,25 +23,25 @@ class EmbeddingController (
             context.getString(sourceCategoryInfo[it]!!.second)
         }
 
-        var profileEmbedding: List<Float> = emptyList()
-        subscribedCategoriesStrings.forEach { category ->
-            val categoryEmbedding = textEmbedder.embed(category)
+        val categoryEmbeddings = subscribedCategoriesStrings.map { category ->
+            textEmbedder.embed(category)
                 .embeddingResult()
                 .embeddings()
                 .first()
                 .floatEmbedding()
                 .toList()
-
-            profileEmbedding =
-                if (profileEmbedding.isEmpty()) {
-                    categoryEmbedding
-                } else {
-                    val alpha = 0.1f
-                    val u = profileEmbedding.map { it * (1f - alpha) }
-                    val v = categoryEmbedding.map { it * alpha }
-                    u.zip(v) { a, b -> a + b }
-                }
         }
+
+        val profileEmbedding =
+            if (categoryEmbeddings.isNotEmpty()) {
+                val count = categoryEmbeddings.size
+                val sum = categoryEmbeddings.reduce { acc, list ->
+                    acc.zip(list) { a, b -> a + b }
+                }
+                sum.map { it / count }
+            } else {
+                emptyList()
+            }
 
         repository.updateProfile(updatedProfile.copy(
             embedding = profileEmbedding

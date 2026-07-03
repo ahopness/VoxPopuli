@@ -93,8 +93,18 @@ class AppRepository @Inject constructor(
                     parseTime = System.currentTimeMillis() - parseStart
 
                     processingTime = measureTimeMillis {
+                        val candidateItems = rss.channel.item.filter { it.link.isNotEmpty() }
+                        val candidateIds = candidateItems.map { it.title.hashCode() }
+                        val existingIds = if (candidateIds.isNotEmpty()) {
+                            dao.getPostsWith(candidateIds).toSet()
+                        } else {
+                            emptySet()
+                        }
+
+                        val newItems = candidateItems.filterNot { existingIds.contains(it.title.hashCode()) }
+
                         val postsToInsert = coroutineScope {
-                            rss.channel.item.map { item -> async {
+                            newItems.map { item -> async {
                                 val imageUrl = fetchImageMetadata(okHttpClient, item.link) ?: ""
 
                                 val id = item.title.hashCode()
@@ -116,23 +126,19 @@ class AppRepository @Inject constructor(
                                         .toList()
                                 }
 
-                                if (item.link.isNotEmpty()) {
-                                    PostEntity(
-                                        id,
-                                        publishedAt = publishedInstant,
-                                        sourceId = source.id,
-                                        imageUrl,
-                                        item.author,
-                                        item.title,
-                                        item.description,
-                                        item.pubDate,
-                                        item.link,
-                                        comments = if (item.comments.isDigitsOnly()) "" else item.comments,
-                                        embedding
-                                    )
-                                } else {
-                                    return@async null
-                                }
+                                PostEntity(
+                                    id,
+                                    publishedAt = publishedInstant,
+                                    sourceId = source.id,
+                                    imageUrl,
+                                    item.author,
+                                    item.title,
+                                    item.description,
+                                    item.pubDate,
+                                    item.link,
+                                    comments = if (item.comments.isDigitsOnly()) "" else item.comments,
+                                    embedding
+                                )
                             } }.awaitAll().filterNotNull()
                         }
                         dao.insertPosts(postsToInsert)
