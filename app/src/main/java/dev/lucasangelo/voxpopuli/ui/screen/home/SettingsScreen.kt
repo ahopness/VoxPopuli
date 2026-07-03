@@ -451,6 +451,20 @@ fun SettingsEditSourceModal(
     var sourceLogoUrl by remember { mutableStateOf(source?.logoUrl ?: "") }
     var sourceFeedUrl by remember { mutableStateOf(source?.feedUrl ?: "") }
 
+    var sourceNameIsError by remember { mutableStateOf(false) }
+    var sourceLogoUrlIsError by remember { mutableStateOf(false) }
+    var sourceFeedUrlIsError by remember { mutableStateOf(false) }
+    fun checkForErrors() : Boolean {
+        sourceNameIsError = (sourceName.trim().isEmpty())
+        sourceLogoUrlIsError = (sourceLogoUrl.trim().isEmpty())
+        sourceFeedUrlIsError = (sourceFeedUrl.trim().isEmpty())
+
+        if (sourceNameIsError || sourceLogoUrlIsError || sourceFeedUrlIsError)
+            return true
+        else
+            return false
+    }
+
     var showDeletionRequest by remember { mutableStateOf(false) }
 
     ModalBottomSheet(
@@ -479,6 +493,7 @@ fun SettingsEditSourceModal(
                 label = { Text("Name") },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
+                isError = sourceNameIsError,
                 colors = OutlinedTextFieldDefaults.colors(unfocusedBorderColor = Color.DarkGray),
                 modifier = Modifier.fillMaxWidth()
             )
@@ -489,6 +504,7 @@ fun SettingsEditSourceModal(
                 label = { Text("Logo URL") },
                 singleLine = true,
                 colors = OutlinedTextFieldDefaults.colors(unfocusedBorderColor = Color.DarkGray),
+                isError = sourceLogoUrlIsError,
                 modifier = Modifier.fillMaxWidth()
             )
 
@@ -509,6 +525,7 @@ fun SettingsEditSourceModal(
                 label = { Text("RSS Feed URL") },
                 singleLine = true,
                 colors = OutlinedTextFieldDefaults.colors(unfocusedBorderColor = Color.DarkGray),
+                isError = sourceFeedUrlIsError,
                 modifier = Modifier.fillMaxWidth()
             )
 
@@ -516,15 +533,17 @@ fun SettingsEditSourceModal(
                 Button(
                     modifier = Modifier.fillMaxWidth(),
                     onClick = {
-                        onSourceInsertRequest(
-                            SourceEntity(
-                                name = sourceName,
-                                logoUrl = sourceLogoUrl,
-                                category = sourceCategory,
-                                feedUrl = sourceFeedUrl
+                        if (!checkForErrors()) {
+                            onSourceInsertRequest(
+                                SourceEntity(
+                                    name = sourceName.trim(),
+                                    logoUrl = sourceLogoUrl.trim(),
+                                    category = sourceCategory,
+                                    feedUrl = sourceFeedUrl.trim()
+                                )
                             )
-                        )
-                        onDismissRequest()
+                            onDismissRequest()
+                        }
                     }
                 ) {
                     Text(stringResource(R.string.settings_sources_button_create))
@@ -547,15 +566,17 @@ fun SettingsEditSourceModal(
                     Button(
                         modifier = Modifier.weight(1f),
                         onClick = {
-                            onSourceUpdateRequest(
-                                source.copy(
-                                    name = sourceName,
-                                    logoUrl = sourceLogoUrl,
-                                    category = sourceCategory,
-                                    feedUrl = sourceFeedUrl
+                            if (!checkForErrors()) {
+                                onSourceUpdateRequest(
+                                    source.copy(
+                                        name = sourceName.trim(),
+                                        logoUrl = sourceLogoUrl.trim(),
+                                        category = sourceCategory,
+                                        feedUrl = sourceFeedUrl.trim()
+                                    )
                                 )
-                            )
-                            onDismissRequest()
+                                onDismissRequest()
+                            }
                         }
                     ) {
                         Text(stringResource(R.string.settings_sources_button_edit))
