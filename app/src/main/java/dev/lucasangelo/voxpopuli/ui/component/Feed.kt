@@ -46,13 +46,13 @@ fun Feed(
             canGoBack = false,
             title = topBarTitle,
             iconContent = topBarIconContent,
-            actions = listOf(
+            actions = emptyList() /*listOf(
                 FloatingExtendedTopBarActionItem(
                     name = stringResource(R.string.options),
                     icon = R.drawable.icon_more,
                     onClick = { /* TODO: Edit feed button */ }
                 )
-            )
+            )*/
         ) }
     ) {
         PullToRefreshBox(

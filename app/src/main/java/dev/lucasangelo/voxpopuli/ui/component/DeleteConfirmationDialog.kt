@@ -1,0 +1,45 @@
+package dev.lucasangelo.voxpopuli.ui.component
+
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
+import dev.lucasangelo.voxpopuli.R
+
+@Composable
+fun DeleteConfirmationDialog(
+    title: String = stringResource(R.string.confirm_delete_title),
+    text: String,
+    onDismiss: () -> Unit,
+    onConfirm: () -> Unit
+) {
+    AlertDialog(
+        containerColor = Color.Black,
+        icon = {
+            Icon(
+                painter = painterResource(R.drawable.icon_delete),
+                contentDescription = null,
+                modifier = Modifier
+                    .size(64.dp)
+            )
+        },
+        title = { Text(title) },
+        text = { Text(text) },
+        onDismissRequest = onDismiss,
+        dismissButton = {
+            Button(onClick = onDismiss) { Text(stringResource(R.string.dismiss)) }
+        },
+        confirmButton = {
+            OutlinedButton(onClick = { onConfirm(); onDismiss() }) { Text(stringResource(R.string.confirm)) }
+        },
+    )
+
+}

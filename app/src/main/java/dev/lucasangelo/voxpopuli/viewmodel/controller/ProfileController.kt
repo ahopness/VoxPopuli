@@ -18,6 +18,7 @@ class ProfileController(
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = null
         )
+
     fun updateProfile(profile: Profile) = scope.launch {
         repository.updateProfile(profile)
     }

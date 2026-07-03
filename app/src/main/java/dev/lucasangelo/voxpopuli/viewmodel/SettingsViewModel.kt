@@ -9,9 +9,12 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dev.lucasangelo.voxpopuli.data.AppRepository
 import dev.lucasangelo.voxpopuli.data.datastore.Profile
 import dev.lucasangelo.voxpopuli.data.datastore.Settings
+import dev.lucasangelo.voxpopuli.data.room.SourceEntity
 import dev.lucasangelo.voxpopuli.viewmodel.controller.EmbeddingController
 import dev.lucasangelo.voxpopuli.viewmodel.controller.ProfileController
 import dev.lucasangelo.voxpopuli.viewmodel.controller.SettingsController
+import dev.lucasangelo.voxpopuli.viewmodel.controller.SourcesController
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -30,4 +33,10 @@ class SettingsViewModel @Inject constructor(
 
     private val embeddingController = EmbeddingController(context, repository, viewModelScope, textEmbedder)
     fun updateProfileEmbedding(updatedProfile: Profile) = embeddingController.updateProfileEmbedding(updatedProfile)
+
+    private val sourcesController = SourcesController(repository, viewModelScope)
+    val sources = sourcesController.sources
+    fun insertSource(source: SourceEntity) = sourcesController.insertSource(source)
+    fun updateSource(source: SourceEntity) = sourcesController.updateSource(source)
+    fun deleteSource(source: SourceEntity) = sourcesController.deleteSource(source)
 }

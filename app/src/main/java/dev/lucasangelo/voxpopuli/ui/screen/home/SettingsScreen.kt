@@ -1,5 +1,7 @@
 package dev.lucasangelo.voxpopuli.ui.screen.home
 
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -12,13 +14,20 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -30,10 +39,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -43,9 +55,12 @@ import dev.lucasangelo.voxpopuli.data.datastore.Profile
 import dev.lucasangelo.voxpopuli.data.datastore.Settings
 import dev.lucasangelo.voxpopuli.data.datastore.TabSelection
 import dev.lucasangelo.voxpopuli.data.room.SourceCategory
+import dev.lucasangelo.voxpopuli.data.room.SourceEntity
 import dev.lucasangelo.voxpopuli.data.room.sourceCategoryInfo
 import dev.lucasangelo.voxpopuli.ui.component.CleanScaffold
+import dev.lucasangelo.voxpopuli.ui.component.DeleteConfirmationDialog
 import dev.lucasangelo.voxpopuli.ui.component.FloatingExtendedTopBar
+import dev.lucasangelo.voxpopuli.ui.component.MonochromeAsyncImage
 import dev.lucasangelo.voxpopuli.ui.component.floatingExtendedTopBarPadding
 import dev.lucasangelo.voxpopuli.ui.component.floatingNavigationBarPadding
 import dev.lucasangelo.voxpopuli.viewmodel.SettingsViewModel
@@ -59,6 +74,8 @@ fun SettingsScreen(
     if (settings == null) return
     val profile by viewModel.profile.collectAsStateWithLifecycle()
     if (profile == null) return
+
+    val sources by viewModel.sources.collectAsStateWithLifecycle()
 
     val listState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
@@ -89,28 +106,53 @@ fun SettingsScreen(
             item { Spacer(Modifier.height(floatingExtendedTopBarPadding + 16.dp)) }
 
             item {
-                ChangeTabSelection(
+                SettingsChangeTabSelection(
                     settings!!,
                     onSettingsUpdated = { viewModel.updateSettings(it) }
                 )
             }
 
             item {
-                RetuneRecommendations(
+                SettingsRetuneRecommendations(
                     profile!!,
                     onProfileEmbeddingsUpdated = { viewModel.updateProfileEmbedding(it) }
                 )
             }
 
+            item { Spacer(Modifier.height(16.dp)) }
+            item { Text(stringResource(R.string.settings_sources_title)) }
+
+            items(sources, key = { it.id }) { source ->
+                SettingsSource(
+                    source,
+                    onSourceUpdateRequest = {
+                        viewModel.updateSource(it)
+                    },
+                    onSourceDeleteRequest = {
+                        viewModel.deleteSource(it)
+                    }
+                )
+            }
+
+            item {
+                SettingsNewSourceButton(
+                    onSourceInsertRequest = {
+                        viewModel.insertSource(it)
+                    }
+                )
+            }
 
             item { Spacer(Modifier.height(floatingNavigationBarPadding + 32.dp)) }
         }
     }
 }
 
+val iconSize = 48.dp
+val smallIconSize = 32.dp
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ChangeTabSelection(
+fun SettingsChangeTabSelection(
     settings: Settings,
     onSettingsUpdated: (Settings) -> Unit,
 ) {
@@ -139,7 +181,7 @@ fun ChangeTabSelection(
             Icon(
                 painter = painterResource(R.drawable.icon_expand),
                 contentDescription = null,
-                modifier = Modifier.size(32.dp)
+                modifier = Modifier.size(smallIconSize)
             )
         }
     }
@@ -198,7 +240,7 @@ fun ChangeTabSelection(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RetuneRecommendations(
+fun SettingsRetuneRecommendations(
     profile: Profile,
     onProfileEmbeddingsUpdated: (Profile) -> Unit,
 ) {
@@ -208,7 +250,19 @@ fun RetuneRecommendations(
         modifier = Modifier.fillMaxWidth(),
         onClick = { showOptionsModal = true },
     ) {
-        Text(stringResource(R.string.settings_retune))
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(stringResource(R.string.settings_retune))
+
+            Icon(
+                painter = painterResource(R.drawable.icon_repost),
+                contentDescription = null,
+                modifier = Modifier.size(smallIconSize)
+            )
+        }
     }
 
     val coroutineScope = rememberCoroutineScope()
@@ -275,6 +329,324 @@ fun RetuneRecommendations(
                     }
                 ) {
                     Text(stringResource(R.string.confirm))
+                }
+            }
+        }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SettingsSource(
+    source: SourceEntity,
+    onSourceUpdateRequest: (SourceEntity) -> Unit,
+    onSourceDeleteRequest: (SourceEntity) -> Unit,
+) {
+    var showOptionsModal by remember { mutableStateOf(false) }
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        modifier = Modifier
+            .clip(RoundedCornerShape(16.dp))
+            .border(
+                border = BorderStroke(width = 1.dp, color = Color.DarkGray),
+                shape = RoundedCornerShape(16.dp)
+            )
+            .padding(vertical = 8.dp)
+            .padding(start = 24.dp, end = 16.dp)
+            .clickable(onClick = { showOptionsModal = true }),
+    ) {
+        MonochromeAsyncImage(
+            model = source.logoUrl,
+            contentDescription = null,
+            modifier = Modifier.size(iconSize)
+        )
+
+        Text(
+            text = source.name,
+            textAlign = TextAlign.Start,
+            modifier = Modifier.weight(1f)
+        )
+
+        Icon(
+            painter = painterResource(R.drawable.icon_edit),
+            contentDescription = stringResource(R.string.settings_sources_edit_button),
+            modifier = Modifier.size(iconSize)
+        )
+    }
+
+    val coroutineScope = rememberCoroutineScope()
+    val sheetState = rememberModalBottomSheetState()
+    val onDismissRequest: () -> Unit = {
+        coroutineScope.launch {
+            sheetState.hide()
+        }.invokeOnCompletion {
+            showOptionsModal = false
+        }
+    }
+    if (showOptionsModal)
+        SettingsEditSourceModal(
+            sheetState,
+            onDismissRequest,
+            source,
+            onSourceUpdateRequest = onSourceUpdateRequest,
+            onSourceDeleteRequest = onSourceDeleteRequest,
+        )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SettingsNewSourceButton(
+    onSourceInsertRequest: (SourceEntity) -> Unit,
+) {
+    var showOptionsModal by remember { mutableStateOf(false) }
+
+    OutlinedButton(
+        modifier = Modifier.fillMaxWidth(),
+        onClick = { showOptionsModal = true }
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(stringResource(R.string.settings_sources_new))
+
+            Icon(
+                painter = painterResource(R.drawable.icon_add),
+                contentDescription = null,
+                modifier = Modifier.size(smallIconSize)
+            )
+        }
+    }
+
+    val coroutineScope = rememberCoroutineScope()
+    val sheetState = rememberModalBottomSheetState()
+    val onDismissRequest: () -> Unit = {
+        coroutineScope.launch {
+            sheetState.hide()
+        }.invokeOnCompletion {
+            showOptionsModal = false
+        }
+    }
+    if (showOptionsModal)
+        SettingsEditSourceModal(
+            sheetState,
+            onDismissRequest,
+            source = null,
+            onSourceInsertRequest = onSourceInsertRequest,
+        )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SettingsEditSourceModal(
+    sheetState: SheetState,
+    onDismissRequest: () -> Unit,
+    source: SourceEntity?,
+    onSourceInsertRequest: (SourceEntity) -> Unit = {},
+    onSourceUpdateRequest: (SourceEntity) -> Unit = {},
+    onSourceDeleteRequest: (SourceEntity) -> Unit = {},
+) {
+    var sourceName by remember { mutableStateOf(source?.name ?: "") }
+    var sourceCategory by remember { mutableStateOf(source?.category ?: SourceCategory.GENERAL) }
+    var sourceLogoUrl by remember { mutableStateOf(source?.logoUrl ?: "") }
+    var sourceFeedUrl by remember { mutableStateOf(source?.feedUrl ?: "") }
+
+    var showDeletionRequest by remember { mutableStateOf(false) }
+
+    ModalBottomSheet(
+        sheetState = sheetState,
+        onDismissRequest = onDismissRequest,
+        containerColor = Color.Black
+    ) {
+        Column(
+            horizontalAlignment = Alignment.Start,
+            verticalArrangement = Arrangement.spacedBy(32.dp),
+            modifier = Modifier.padding(horizontal = 24.dp),
+        ) {
+            Text(
+                if (source == null)
+                    stringResource(R.string.settings_sources_title_create)
+                else
+                    stringResource(R.string.settings_sources_title_edit)
+            )
+
+            OutlinedTextField(
+                value = sourceName,
+                onValueChange = { sourceName = it },
+                label = { Text("Name") },
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
+                colors = OutlinedTextFieldDefaults.colors(unfocusedBorderColor = Color.DarkGray),
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            SettingsSelectCategoryButton(
+                sourceCategory,
+                onCategoryChanged = { sourceCategory = it }
+            )
+
+            OutlinedTextField(
+                value = sourceLogoUrl,
+                onValueChange = { sourceLogoUrl = it },
+                label = { Text("Logo URL") },
+                singleLine = true,
+                colors = OutlinedTextFieldDefaults.colors(unfocusedBorderColor = Color.DarkGray),
+                modifier = Modifier.fillMaxWidth()
+            )
+            OutlinedTextField(
+                value = sourceFeedUrl,
+                onValueChange = { sourceFeedUrl = it },
+                label = { Text("RSS Feed URL") },
+                singleLine = true,
+                colors = OutlinedTextFieldDefaults.colors(unfocusedBorderColor = Color.DarkGray),
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            if (source == null)
+                Button(
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = {
+                        onSourceInsertRequest(
+                            SourceEntity(
+                                name = sourceName,
+                                logoUrl = sourceLogoUrl,
+                                category = sourceCategory,
+                                feedUrl = sourceFeedUrl
+                            )
+                        )
+                        onDismissRequest()
+                    }
+                ) {
+                    Text(stringResource(R.string.settings_sources_button_create))
+                }
+            else
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    OutlinedButton(
+                        modifier = Modifier.weight(1f),
+                        border = BorderStroke(1.dp, Color.Red.copy(0.75f)),
+                        colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.Red.copy(0.75f)),
+                        onClick = {
+                            showDeletionRequest = true
+                        },
+                    ) {
+                        Text(stringResource(R.string.settings_sources_button_delete))
+                    }
+                    Button(
+                        modifier = Modifier.weight(1f),
+                        onClick = {
+                            onSourceUpdateRequest(
+                                source.copy(
+                                    name = sourceName,
+                                    logoUrl = sourceLogoUrl,
+                                    category = sourceCategory,
+                                    feedUrl = sourceFeedUrl
+                                )
+                            )
+                            onDismissRequest()
+                        }
+                    ) {
+                        Text(stringResource(R.string.settings_sources_button_edit))
+                    }
+                }
+        }
+    }
+
+    if (showDeletionRequest)
+        DeleteConfirmationDialog(
+            text = stringResource(R.string.delete_source_warning),
+            onDismiss = { showDeletionRequest = false },
+            onConfirm = {
+                onSourceDeleteRequest(source!!)
+                onDismissRequest()
+            }
+        )
+}
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SettingsSelectCategoryButton(
+    category: SourceCategory,
+    onCategoryChanged: (SourceCategory) -> Unit,
+) {
+    var showOptionsModal by remember { mutableStateOf(false) }
+
+    OutlinedButton(
+        modifier = Modifier.fillMaxWidth(),
+        onClick = { showOptionsModal = true },
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    painter = painterResource(sourceCategoryInfo[category]!!.first),
+                    contentDescription = null,
+                    modifier = Modifier.size(smallIconSize)
+                )
+                Text(
+                    text = buildAnnotatedString {
+                        append(stringResource(R.string.settings_sources_edit_category))
+                        append(' ')
+                        append(stringResource(sourceCategoryInfo[category]!!.second))
+                    }
+                )
+            }
+
+            Icon(
+                painter = painterResource(R.drawable.icon_expand),
+                contentDescription = null,
+                modifier = Modifier.size(smallIconSize)
+            )
+        }
+    }
+
+    val coroutineScope = rememberCoroutineScope()
+    val sheetState = rememberModalBottomSheetState()
+    val onDismissRequest: () -> Unit = {
+        coroutineScope.launch {
+            sheetState.hide()
+        }.invokeOnCompletion {
+            showOptionsModal = false
+        }
+    }
+    if (showOptionsModal)
+        ModalBottomSheet(
+            sheetState = sheetState,
+            onDismissRequest = onDismissRequest,
+            containerColor = Color.Black
+        ) {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                sourceCategoryInfo.forEach { (category, pair) ->
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(12.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 18.dp)
+                            .clickable(onClick = {
+                                onCategoryChanged(category)
+                                onDismissRequest()
+                            })
+                    ) {
+                        Icon(
+                            painter = painterResource(pair.first),
+                            contentDescription = null,
+                            modifier = Modifier.size(iconSize)
+                        )
+                        Text(
+                            text = stringResource(pair.second),
+                        )
+                    }
                 }
             }
         }

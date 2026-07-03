@@ -8,6 +8,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dev.lucasangelo.voxpopuli.data.AppRepository
 import dev.lucasangelo.voxpopuli.data.room.SourceEntity
 import dev.lucasangelo.voxpopuli.viewmodel.controller.SettingsController
+import dev.lucasangelo.voxpopuli.viewmodel.controller.SourcesController
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
@@ -21,10 +22,6 @@ class HomeViewModel @Inject constructor(
     private val settingsController = SettingsController(repository, viewModelScope)
     val settings = settingsController.settings
 
-    val sources: StateFlow<List<SourceEntity>> = repository.getAllSources()
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = emptyList()
-        )
+    private val sourcesController = SourcesController(repository, viewModelScope)
+    val sources = sourcesController.sources
 }

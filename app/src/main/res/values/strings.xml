@@ -31,10 +31,22 @@
     <string name="feed_error">Something went wrong:</string>
     <string name="actions">Actions</string>
     <string name="confirm">Confirm</string>
-    <string name="settings_retune">Retune \'For You\' Page</string>
+    <string name="dismiss">Dismiss</string>
+    <string name="confirm_delete_title">Are you sure?</string>
+    <string name="delete_source_warning">If you delete this source now you won\'t be able to recover it later.</string>
+    <string name="settings_retune">Retune \'For You\' Tab</string>
     <string name="settings_tabs_choose">Choose how you want your tabs:</string>
     <string name="settings_tabs_categories">Show Categories</string>
     <string name="settings_tabs_sources">Show Sources</string>
     <string name="settings_retune_choose">Select below only the topics you are most interested in:</string>
     <string name="settings_tabs">Tab Selection:</string>
+    <string name="settings_sources_title">Edit Sources</string>
+    <string name="settings_sources_new">Add New Source</string>
+    <string name="settings_sources_edit_button">Edit Source</string>
+    <string name="settings_sources_title_create">Add A Source</string>
+    <string name="settings_sources_title_edit">Edit Your Source</string>
+    <string name="settings_sources_button_create">Add Source</string>
+    <string name="settings_sources_button_delete">Delete Source</string>
+    <string name="settings_sources_button_edit">Edit Source</string>
+    <string name="settings_sources_edit_category">Category:</string>
 </resources>

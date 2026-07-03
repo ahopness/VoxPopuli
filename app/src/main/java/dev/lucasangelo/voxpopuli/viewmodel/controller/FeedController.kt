@@ -25,12 +25,8 @@ class FeedController(
     private val sources: suspend () -> List<SourceEntity>,
     val feed: StateFlow<List<PostEntity>>,
 ) {
-    val allSources: StateFlow<List<SourceEntity>> = repository.getAllSources()
-        .stateIn(
-            scope = scope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = emptyList()
-        )
+    private val sourcesController = SourcesController(repository, scope)
+    val allSources = sourcesController.sources
 
     val isLoading = MutableStateFlow(false)
     val loadingProgress = MutableStateFlow(0)
