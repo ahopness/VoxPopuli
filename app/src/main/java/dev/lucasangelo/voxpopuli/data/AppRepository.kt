@@ -99,11 +99,13 @@ class AppRepository @Inject constructor(
 
                                 val id = item.title.hashCode()
 
-                                val publishedInstant = try {
-                                    OffsetDateTime.parse(item.pubDate, DateTimeFormatter.RFC_1123_DATE_TIME).toInstant()
-                                } catch (e: Exception) {
-                                    return@async null
-                                }
+                                val publishedInstant =
+                                    try {
+                                        OffsetDateTime.parse(item.pubDate, DateTimeFormatter.RFC_1123_DATE_TIME).toInstant()
+                                    } catch (e: Exception) {
+                                        // NOTE: npr and ny times dont follow the standard, this is a (stupid) fallback for them
+                                        Instant.now()
+                                    }
 
                                 val embedding = embedderMutex.withLock {
                                     textEmbedder.embed(item.title)
@@ -114,7 +116,7 @@ class AppRepository @Inject constructor(
                                         .toList()
                                 }
 
-                                if (item.link.isNotEmpty() && publishedInstant != null) {
+                                if (item.link.isNotEmpty()) {
                                     PostEntity(
                                         id,
                                         publishedAt = publishedInstant,

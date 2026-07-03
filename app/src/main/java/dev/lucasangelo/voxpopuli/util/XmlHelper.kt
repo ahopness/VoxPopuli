@@ -31,17 +31,20 @@ fun parseRss(xml: String): Rss {
             when (reader.next()) {
                 XMLStreamConstants.START_ELEMENT -> {
                     val name = reader.localName
+                    val prefix = reader.prefix
                     path.add(name)
                     currentText.setLength(0)
-                    if (name == "rss") {
-                        rssVersion = reader.getAttributeValue(null, "version") ?: ""
-                    } else if (path.size == 3 && path[0] == "rss" && path[1] == "channel" && path[2] == "item") {
-                        itemAuthor = ""
-                        itemTitle = ""
-                        itemDescription = ""
-                        itemLink = ""
-                        itemComments = ""
-                        itemPubDate = ""
+                    if (prefix.isNullOrEmpty()) {
+                        if (name == "rss") {
+                            rssVersion = reader.getAttributeValue(null, "version") ?: ""
+                        } else if (path.size == 3 && path[0] == "rss" && path[1] == "channel" && path[2] == "item") {
+                            itemAuthor = ""
+                            itemTitle = ""
+                            itemDescription = ""
+                            itemLink = ""
+                            itemComments = ""
+                            itemPubDate = ""
+                        }
                     }
                 }
                 XMLStreamConstants.CHARACTERS, XMLStreamConstants.CDATA -> {
@@ -49,34 +52,37 @@ fun parseRss(xml: String): Rss {
                 }
                 XMLStreamConstants.END_ELEMENT -> {
                     val name = reader.localName
+                    val prefix = reader.prefix
                     val textValue = currentText.toString().trim()
 
-                    if (path.size == 3 && path[0] == "rss" && path[1] == "channel" && (name == "title" || name == "description" || name == "link")) {
-                        when (name) {
-                            "title" -> channelTitle = textValue
-                            "description" -> channelDescription = textValue
-                            "link" -> channelLink = textValue
-                        }
-                    } else if (path.size == 4 && path[0] == "rss" && path[1] == "channel" && path[2] == "item") {
-                        when (name) {
-                            "author" -> itemAuthor = textValue
-                            "title" -> itemTitle = textValue
-                            "description" -> itemDescription = textValue
-                            "link" -> itemLink = textValue
-                            "comments" -> itemComments = textValue
-                            "pubDate" -> itemPubDate = textValue
-                        }
-                    } else if (path.size == 3 && path[0] == "rss" && path[1] == "channel" && name == "item") {
-                        items.add(
-                            Rss.Channel.Item(
-                                author = itemAuthor,
-                                title = itemTitle,
-                                description = itemDescription,
-                                link = itemLink,
-                                comments = itemComments,
-                                pubDate = itemPubDate
+                    if (prefix.isNullOrEmpty()) {
+                        if (path.size == 3 && path[0] == "rss" && path[1] == "channel" && (name == "title" || name == "description" || name == "link")) {
+                            when (name) {
+                                "title" -> channelTitle = textValue
+                                "description" -> channelDescription = textValue
+                                "link" -> channelLink = textValue
+                            }
+                        } else if (path.size == 4 && path[0] == "rss" && path[1] == "channel" && path[2] == "item") {
+                            when (name) {
+                                "author" -> itemAuthor = textValue
+                                "title" -> itemTitle = textValue
+                                "description" -> itemDescription = textValue
+                                "link" -> itemLink = textValue
+                                "comments" -> itemComments = textValue
+                                "pubDate" -> itemPubDate = textValue
+                            }
+                        } else if (path.size == 3 && path[0] == "rss" && path[1] == "channel" && name == "item") {
+                            items.add(
+                                Rss.Channel.Item(
+                                    author = itemAuthor,
+                                    title = itemTitle,
+                                    description = itemDescription,
+                                    link = itemLink,
+                                    comments = itemComments,
+                                    pubDate = itemPubDate
+                                )
                             )
-                        )
+                        }
                     }
 
                     path.removeLastOrNull()
