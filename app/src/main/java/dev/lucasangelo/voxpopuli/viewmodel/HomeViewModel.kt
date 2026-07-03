@@ -6,12 +6,8 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dev.lucasangelo.voxpopuli.data.AppRepository
-import dev.lucasangelo.voxpopuli.data.room.SourceEntity
 import dev.lucasangelo.voxpopuli.viewmodel.controller.SettingsController
 import dev.lucasangelo.voxpopuli.viewmodel.controller.SourcesController
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 
 @HiltViewModel

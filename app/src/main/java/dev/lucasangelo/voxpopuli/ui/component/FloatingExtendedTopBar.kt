@@ -12,32 +12,25 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.layout
-import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntOffset
-import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
 import dev.lucasangelo.voxpopuli.R
@@ -55,15 +48,12 @@ data class FloatingExtendedTopBarActionItem(
 @Composable
 fun BoxScope.FloatingExtendedTopBar(
     title: String,
-    description: String = "",
     canGoBack: Boolean,
     onGoBackRequest: () -> Unit = { },
     iconContent: @Composable (Modifier, () -> Float) -> Unit,
     actions: List<FloatingExtendedTopBarActionItem>,
     listState: LazyListState,
 ) {
-    var parentSize by remember { mutableStateOf(IntSize.Zero) }
-
     Box(
         modifier = Modifier
             .align(Alignment.TopCenter)
@@ -102,9 +92,6 @@ fun BoxScope.FloatingExtendedTopBar(
                         placeable.placeRelative(0, 0)
                     }
                 }
-                .onSizeChanged {
-                    parentSize = it
-                }
         ) {
             if (canGoBack) {
                 Icon(
@@ -119,25 +106,12 @@ fun BoxScope.FloatingExtendedTopBar(
 
             iconContent(
                 Modifier
+                    .alpha(lerp(1f, 0f, collapsedFraction.value))
                     .size(floatingTopBarButtonSize)
-                    .offset {
-                        IntOffset(
-                            x = lerp(
-                                (parentSize.width / 2f) - (floatingTopBarButtonSize / 2f).toPx(),
-                                if (canGoBack) floatingTopBarButtonSize.toPx() else 16.dp.toPx(),
-                                collapsedFraction.value
-                            ).toInt(),
-                            y = lerp(
-                                (parentSize.height / 2f) - (floatingTopBarButtonSize / 2f).toPx(),
-                                0f,
-                                collapsedFraction.value
-                            ).toInt()
-                        )
-                    },
+                    .align(Alignment.Center),
                 { collapsedFraction.value }
             )
 
-            var titleLineHeight: Float by remember { mutableFloatStateOf(0f) }
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -148,7 +122,7 @@ fun BoxScope.FloatingExtendedTopBar(
                             x = 0,
                             y = lerp(
                                 84.dp.toPx(),
-                                if (description.isEmpty()) 0f else titleLineHeight,
+                                0.dp.toPx(),
                                 collapsedFraction.value
                             ).toInt()
                         )
@@ -160,24 +134,7 @@ fun BoxScope.FloatingExtendedTopBar(
                     textAlign = TextAlign.Center,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier
-                        .alpha(lerp(1f, 0f, collapsedFraction.value)),
-                    onTextLayout = {
-                        titleLineHeight =
-                            it.getLineBottom(0) / maxOf(1, it.lineCount)
-                    }
                 )
-                if (description.isNotEmpty()) {
-                    Text(
-                        text = description,
-                        style = MaterialTheme.typography.titleSmall,
-                        color = Color.Gray,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier
-                            .width(360.dp)
-                            .alpha(lerp(1f, 0f, collapsedFraction.value))
-                    )
-                }
             }
 
             Row(

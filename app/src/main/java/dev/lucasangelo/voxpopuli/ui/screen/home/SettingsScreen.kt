@@ -22,7 +22,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
@@ -40,7 +39,6 @@ import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -215,7 +213,7 @@ fun SettingsChangeTabSelection(
                 Column(
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    Button(
+                    OutlinedButton(
                         modifier = Modifier.fillMaxWidth(),
                         onClick = {
                             onSettingsUpdated(settings.copy(tabSelection = TabSelection.CATEGORIES))
@@ -224,7 +222,7 @@ fun SettingsChangeTabSelection(
                     ) {
                         Text(stringResource(R.string.settings_tabs_categories))
                     }
-                    Button(
+                    OutlinedButton(
                         modifier = Modifier.fillMaxWidth(),
                         onClick = {
                             onSettingsUpdated(settings.copy(tabSelection = TabSelection.SOURCES))
@@ -461,15 +459,18 @@ fun SettingsEditSourceModal(
         containerColor = Color.Black
     ) {
         Column(
-            horizontalAlignment = Alignment.Start,
+            horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(32.dp),
             modifier = Modifier.padding(horizontal = 24.dp),
         ) {
             Text(
-                if (source == null)
-                    stringResource(R.string.settings_sources_title_create)
-                else
-                    stringResource(R.string.settings_sources_title_edit)
+                text =
+                    if (source == null)
+                        stringResource(R.string.settings_sources_title_create)
+                    else
+                        stringResource(R.string.settings_sources_title_edit),
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
             )
 
             OutlinedTextField(
@@ -482,11 +483,6 @@ fun SettingsEditSourceModal(
                 modifier = Modifier.fillMaxWidth()
             )
 
-            SettingsSelectCategoryButton(
-                sourceCategory,
-                onCategoryChanged = { sourceCategory = it }
-            )
-
             OutlinedTextField(
                 value = sourceLogoUrl,
                 onValueChange = { sourceLogoUrl = it },
@@ -495,6 +491,18 @@ fun SettingsEditSourceModal(
                 colors = OutlinedTextFieldDefaults.colors(unfocusedBorderColor = Color.DarkGray),
                 modifier = Modifier.fillMaxWidth()
             )
+
+            SettingsSelectCategoryButton(
+                sourceCategory,
+                onCategoryChanged = { sourceCategory = it }
+            )
+
+            Icon(
+                painter = painterResource(R.drawable.divider_horizontal),
+                contentDescription = null,
+                modifier = Modifier.size(32.dp)
+            )
+
             OutlinedTextField(
                 value = sourceFeedUrl,
                 onValueChange = { sourceFeedUrl = it },
@@ -523,7 +531,7 @@ fun SettingsEditSourceModal(
                 }
             else
                 Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp),
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     OutlinedButton(

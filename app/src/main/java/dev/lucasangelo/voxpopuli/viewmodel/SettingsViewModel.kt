@@ -14,7 +14,6 @@ import dev.lucasangelo.voxpopuli.viewmodel.controller.EmbeddingController
 import dev.lucasangelo.voxpopuli.viewmodel.controller.ProfileController
 import dev.lucasangelo.voxpopuli.viewmodel.controller.SettingsController
 import dev.lucasangelo.voxpopuli.viewmodel.controller.SourcesController
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel

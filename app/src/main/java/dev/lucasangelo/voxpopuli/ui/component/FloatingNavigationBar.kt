@@ -33,6 +33,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import dev.lucasangelo.voxpopuli.ui.overlayTransparencyColor
 
@@ -142,8 +143,10 @@ fun FloatingNavigationButton(
                         is Int -> stringResource(title)
                         else -> ""
                     },
+                textAlign = TextAlign.Center,
                 fontFamily = FontFamily.Monospace,
                 style = MaterialTheme.typography.titleSmall,
+                modifier = Modifier.widthIn(max = 92.dp)
             )
         }
     }
