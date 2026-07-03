@@ -33,49 +33,29 @@ fun App(
 ) {
     val navController = rememberNavController()
 
-    val snackbarScope = rememberCoroutineScope()
-    val snackbarHostState = remember { SnackbarHostState() }
-    val showMessage: (String) -> Unit = { message ->
-        snackbarScope.launch { snackbarHostState.showSnackbar(message) }
-    }
-
     val settings by viewModel.settings.collectAsStateWithLifecycle()
     if (settings == null) return
 
-    Box {
-        NavHost(
-            navController,
-            startDestination = if (settings!!.showOnboarding) OnboardingRoute else HomeRoute,
-            enterTransition = { slideIntoContainer(
-                animationSpec = tween(200, easing = EaseOut),
-                towards = AnimatedContentTransitionScope.SlideDirection.Start
-            ) },
-            popEnterTransition = {
-                EnterTransition.None
-            },
-            popExitTransition = { slideOutOfContainer(
-                animationSpec = tween(200, easing = EaseIn),
-                towards = AnimatedContentTransitionScope.SlideDirection.End
-            ) }
-        ) {
-            composable<OnboardingRoute> {
-                OnboardingScreen(
-                    navController,
-                )
-            }
-            composable<HomeRoute> {
-                HomeScreen(
-                    navController,
-                    showMessage
-                )
-            }
+    NavHost(
+        navController,
+        startDestination = if (settings!!.showOnboarding) OnboardingRoute else HomeRoute,
+        enterTransition = { slideIntoContainer(
+            animationSpec = tween(200, easing = EaseOut),
+            towards = AnimatedContentTransitionScope.SlideDirection.Start
+        ) },
+        popEnterTransition = {
+            EnterTransition.None
+        },
+        popExitTransition = { slideOutOfContainer(
+            animationSpec = tween(200, easing = EaseIn),
+            towards = AnimatedContentTransitionScope.SlideDirection.End
+        ) }
+    ) {
+        composable<OnboardingRoute> {
+            OnboardingScreen(navController)
         }
-
-        SnackbarHost(
-            snackbarHostState,
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .safeDrawingPadding()
-        )
+        composable<HomeRoute> {
+            HomeScreen()
+        }
     }
 }

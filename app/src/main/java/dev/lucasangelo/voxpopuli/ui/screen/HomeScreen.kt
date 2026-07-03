@@ -32,8 +32,6 @@ object HomeRoute
 
 @Composable
 fun HomeScreen(
-    rootNavController: NavController,
-    rootShowMessage: (String) -> Unit,
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
     Box(Modifier.fillMaxSize()) {
