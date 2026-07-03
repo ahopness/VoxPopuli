@@ -49,4 +49,7 @@
     <string name="settings_sources_button_delete">Excluir Fonte</string>
     <string name="settings_sources_button_edit">Salvar Alterações</string>
     <string name="settings_sources_edit_category">Categoria:</string>
+    <string name="settings_sources_edit_feedurl">URL do feed RSS</string>
+    <string name="settings_sources_edit_logourl">URL do logotipo</string>
+    <string name="settings_sources_edit_name">Nome</string>
 </resources>

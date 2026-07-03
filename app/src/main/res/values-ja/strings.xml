@@ -49,4 +49,7 @@
     <string name="settings_sources_button_delete">削除</string>
     <string name="settings_sources_button_edit">保存</string>
     <string name="settings_sources_edit_category">カテゴリ:</string>
+    <string name="settings_sources_edit_feedurl">RSSフィードのURL</string>
+    <string name="settings_sources_edit_logourl">ロゴのURL</string>
+    <string name="settings_sources_edit_name">名前</string>
 </resources>

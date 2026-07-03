@@ -490,7 +490,7 @@ fun SettingsEditSourceModal(
             OutlinedTextField(
                 value = sourceName,
                 onValueChange = { sourceName = it },
-                label = { Text("Name") },
+                label = { Text(stringResource(R.string.settings_sources_edit_name)) },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
                 isError = sourceNameIsError,
@@ -501,7 +501,7 @@ fun SettingsEditSourceModal(
             OutlinedTextField(
                 value = sourceLogoUrl,
                 onValueChange = { sourceLogoUrl = it },
-                label = { Text("Logo URL") },
+                label = { Text(stringResource(R.string.settings_sources_edit_logourl)) },
                 singleLine = true,
                 colors = OutlinedTextFieldDefaults.colors(unfocusedBorderColor = Color.DarkGray),
                 isError = sourceLogoUrlIsError,
@@ -522,7 +522,7 @@ fun SettingsEditSourceModal(
             OutlinedTextField(
                 value = sourceFeedUrl,
                 onValueChange = { sourceFeedUrl = it },
-                label = { Text("RSS Feed URL") },
+                label = { Text(stringResource(R.string.settings_sources_edit_feedurl)) },
                 singleLine = true,
                 colors = OutlinedTextFieldDefaults.colors(unfocusedBorderColor = Color.DarkGray),
                 isError = sourceFeedUrlIsError,

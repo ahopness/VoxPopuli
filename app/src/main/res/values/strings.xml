@@ -49,4 +49,7 @@
     <string name="settings_sources_button_delete">Delete Source</string>
     <string name="settings_sources_button_edit">Edit Source</string>
     <string name="settings_sources_edit_category">Category:</string>
+    <string name="settings_sources_edit_feedurl">RSS Feed URL</string>
+    <string name="settings_sources_edit_name">Name</string>
+    <string name="settings_sources_edit_logourl">Logo URL</string>
 </resources>

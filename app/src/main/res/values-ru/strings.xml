@@ -49,4 +49,7 @@
     <string name="settings_sources_button_delete">Удалить источник</string>
     <string name="settings_sources_button_edit">Сохранить</string>
     <string name="settings_sources_edit_category">Категория:</string>
+    <string name="settings_sources_edit_feedurl">URL-адрес RSS-ленты</string>
+    <string name="settings_sources_edit_logourl">URL логотипа</string>
+    <string name="settings_sources_edit_name">Имя</string>
 </resources>

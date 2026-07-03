@@ -49,4 +49,7 @@
     <string name="settings_sources_button_delete">स्रोत हटाएं</string>
     <string name="settings_sources_button_edit">स्रोत सहेजें</string>
     <string name="settings_sources_edit_category">श्रेणी:</string>
+    <string name="settings_sources_edit_feedurl">RSS फ़ीड URL</string>
+    <string name="settings_sources_edit_logourl">लोगो URL</string>
+    <string name="settings_sources_edit_name">नाम</string>
 </resources>

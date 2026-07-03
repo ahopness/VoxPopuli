@@ -49,4 +49,7 @@
     <string name="settings_sources_button_delete">Quelle löschen</string>
     <string name="settings_sources_button_edit">Quelle speichern</string>
     <string name="settings_sources_edit_category">Kategorie:</string>
+    <string name="settings_sources_edit_feedurl">RSS-Feed-URL</string>
+    <string name="settings_sources_edit_logourl">Logo-URL</string>
+    <string name="settings_sources_edit_name">Name</string>
 </resources>

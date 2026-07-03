@@ -146,7 +146,7 @@ fun FloatingNavigationButton(
                 textAlign = TextAlign.Center,
                 fontFamily = FontFamily.Monospace,
                 style = MaterialTheme.typography.titleSmall,
-                modifier = Modifier.widthIn(max = 92.dp)
+                modifier = Modifier.widthIn(max = 120.dp)
             )
         }
     }
