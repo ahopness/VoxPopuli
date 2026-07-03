@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -128,14 +129,14 @@ fun OnboardingScreen(
                             val category = entry.key
                             val isSubscribed = !newIgnoredCategories.contains(category)
 
-                            Button(
+                            OutlinedButton(
                                 onClick = {
                                         if (isSubscribed)
                                             newIgnoredCategories.add(category)
                                         else
                                             newIgnoredCategories.remove(category)
                                 },
-                                colors = ButtonDefaults.buttonColors(
+                                colors = ButtonDefaults.outlinedButtonColors(
                                     containerColor = if (isSubscribed) Color.White else Color.Transparent
                                 )
                             ) {
