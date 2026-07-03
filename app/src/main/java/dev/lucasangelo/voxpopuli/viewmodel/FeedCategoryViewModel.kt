@@ -13,7 +13,6 @@ import dev.lucasangelo.voxpopuli.viewmodel.controller.FeedController
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
-import javax.inject.Inject
 
 @HiltViewModel(assistedFactory = FeedCategoryViewModel.Factory::class)
 class FeedCategoryViewModel @AssistedInject constructor(

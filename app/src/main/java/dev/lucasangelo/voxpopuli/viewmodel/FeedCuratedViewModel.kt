@@ -7,11 +7,9 @@ import dev.lucasangelo.voxpopuli.data.AppRepository
 import dev.lucasangelo.voxpopuli.data.room.PostEntity
 import dev.lucasangelo.voxpopuli.util.cosineSimilarity
 import dev.lucasangelo.voxpopuli.viewmodel.controller.FeedController
-import dev.lucasangelo.voxpopuli.viewmodel.controller.ProfileController
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.filterNot
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
