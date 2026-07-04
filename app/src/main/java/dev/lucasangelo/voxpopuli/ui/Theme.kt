@@ -18,7 +18,7 @@ import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.Density
 import androidx.core.view.WindowCompat
 
-val overlayTransparencyColor = Color.Black
+val overlayTransparencyColor = Color.Black.copy(0.75f)
 
 private val DarkColorScheme = darkColorScheme(
     primary = Color(0xFFE0E0E0),
