@@ -1,5 +1,6 @@
 package dev.lucasangelo.voxpopuli.ui.screen.home
 
+import android.content.Intent
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -40,12 +41,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.lucasangelo.voxpopuli.R
@@ -138,6 +141,36 @@ fun SettingsScreen(
                         viewModel.insertSource(it)
                     }
                 )
+            }
+
+            item { Spacer(Modifier.height(64.dp)) }
+            item {
+                val context = LocalContext.current
+                OutlinedButton(
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = {
+                        context.startActivity(Intent(
+                            Intent.ACTION_VIEW,
+                            "https://lucasangelo.dev/links/".toUri()
+                        ).apply {
+                            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                        })
+                    },
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text("Any questions? Get in touch.")
+
+                        Icon(
+                            painter = painterResource(R.drawable.icon_help),
+                            contentDescription = null,
+                            modifier = Modifier.size(smallIconSize)
+                        )
+                    }
+                }
             }
 
             item { Spacer(Modifier.height(floatingNavigationBarPadding + 32.dp)) }
