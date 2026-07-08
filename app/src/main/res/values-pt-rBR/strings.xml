@@ -1,11 +1,11 @@
 <resources>
     <string name="app_name">Vox Populi</string>
-    <string name="onboarding_welcome">Boas-vindas ao</string>
+    <string name="onboarding_welcome">Boas-vindo ao</string>
     <string name="onboarding_desc_suffix">é o seu ponto de encontro com a informação.</string>
     <string name="go_back">Voltar</string>
     <string name="options">Opções</string>
     <string name="loading">Só um momento…</string>
-    <string name="fetched">Atualizado.</string>
+    <string name="fetched">Atualizados.</string>
     <string name="feed_empty">Tudo calmo por aqui. Não há nada para exibir no momento.</string>
     <string name="feed_settings">Configurações</string>
     <string name="feed_bookmarks">Favoritos</string>
