@@ -5,9 +5,12 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.lucasangelo.voxpopuli.data.AppRepository
 import dev.lucasangelo.voxpopuli.data.room.PostEntity
+import dev.lucasangelo.voxpopuli.util.cosineSimilarity
 import dev.lucasangelo.voxpopuli.viewmodel.controller.FeedController
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 
@@ -18,14 +21,37 @@ class FeedNewViewModel @Inject constructor(
     private val feedController = FeedController(
         repository,
         viewModelScope,
-        sources = { repository.getAllSourcesNow() },
-        feed =
-            repository.getAllNewPosts()
-                .stateIn(
-                    scope = viewModelScope,
-                    started = SharingStarted.WhileSubscribed(5000),
-                    initialValue = emptyList()
-                )
+        sources =
+            {
+                val profile = repository.profile.first()
+                repository.getAllSourcesNow()
+                    .filterNot {
+                        profile
+                            .ignoredCategories.contains(it.category)
+                    }
+            },
+        feed = combine(
+            repository.getAllNewPosts(),
+            repository.profile,
+            repository.getAllSources()
+        ) { posts, profile, sources ->
+            val sourcesMap = sources.associateBy { it.id }
+
+            posts
+                .filterNot { post ->
+                    val source = sourcesMap[post.sourceId]
+                    source != null && profile.ignoredCategories.contains(source.category)
+                }
+                .sortedByDescending { post ->
+                    post.embedding.cosineSimilarity(to = profile.embedding)
+                }
+        }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
+        )
+
     )
 
     val sources = feedController.allSources
