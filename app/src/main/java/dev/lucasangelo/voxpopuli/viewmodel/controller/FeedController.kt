@@ -40,8 +40,7 @@ class FeedController(
             sources().map { source -> async { semaphore.withPermit {
                 if (debounced) {
                     val fetchingThreshold = Duration.ofMinutes(30)
-                    val lastFetched = repository.getLastFetchedFromSource(source.id)
-                    val timeSinceLastFetch = Duration.between(lastFetched, Instant.now())
+                    val timeSinceLastFetch = Duration.between(source.lastFetched, Instant.now())
 
                     if (timeSinceLastFetch < fetchingThreshold) {
                         loadingProgress.update { it+1 }

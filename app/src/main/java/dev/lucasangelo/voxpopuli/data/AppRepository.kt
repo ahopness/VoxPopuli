@@ -56,8 +56,6 @@ class AppRepository @Inject constructor(
         dao.insertSource(source)
     suspend fun getSource(sourceId: Long): SourceEntity =
         dao.getSource(sourceId)
-    suspend fun getLastFetchedFromSource(sourceId: Long): Instant =
-        dao.getLastFetchedFromSource(sourceId)
     fun getAllSources(): Flow<List<SourceEntity>> =
         dao.getAllSources()
     suspend fun getAllSourcesNow(): List<SourceEntity> =

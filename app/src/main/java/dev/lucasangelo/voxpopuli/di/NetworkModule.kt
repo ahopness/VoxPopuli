@@ -4,6 +4,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import okhttp3.Dispatcher
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import java.util.concurrent.TimeUnit
@@ -35,6 +36,7 @@ object NetworkModule {
             }
             .connectTimeout(10, TimeUnit.SECONDS)
             .readTimeout(10, TimeUnit.SECONDS)
+            .dispatcher(Dispatcher().apply { maxRequestsPerHost = 15 })
             .build()
     }
 }
