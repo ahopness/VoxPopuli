@@ -120,7 +120,11 @@ fun OnboardingScreen(
             },
             {
                 PagerScaffoldContent(offsetDistance) {
-                    Text(stringResource(R.string.onboarding_algorithm))
+                    Text(
+                        text = stringResource(R.string.onboarding_algorithm),
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth()
+                    )
 
                     FlowRow(
                         horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterHorizontally),
