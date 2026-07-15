@@ -19,8 +19,8 @@ android {
         applicationId = "dev.lucasangelo.voxpopuli"
         minSdk = 26
         targetSdk = 36
-        versionCode = 3
-        versionName = "v1.0rev1"
+        versionCode = 4
+        versionName = "v1.0rev2"
     }
 
     buildTypes {

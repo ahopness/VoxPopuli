@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -36,7 +37,9 @@ fun HomeScreen(
 ) {
     Box(Modifier.fillMaxSize()) {
         val settings by viewModel.settings.collectAsStateWithLifecycle()
-        if(settings == null) return
+        val profile by viewModel.profile.collectAsStateWithLifecycle()
+
+        if(profile == null || settings == null) return
 
         val sources by viewModel.sources.collectAsStateWithLifecycle()
 
@@ -97,7 +100,7 @@ fun HomeScreen(
         }
 
         val pagerState = rememberPagerState(
-            initialPage = 2,
+            initialPage = profile!!.currentTabId,
             pageCount = { tabList.size }
         )
         HorizontalPager(
@@ -109,6 +112,13 @@ fun HomeScreen(
         }
 
         val coroutineScope = rememberCoroutineScope()
+
+        LaunchedEffect(pagerState.settledPage) {
+            viewModel.updateProfile(profile!!.copy(
+                currentTabId = pagerState.settledPage
+            ))
+        }
+
         FloatingNavigationBar(
             selectedIndex = pagerState.currentPage,
             items = tabList.mapIndexed { index, item ->

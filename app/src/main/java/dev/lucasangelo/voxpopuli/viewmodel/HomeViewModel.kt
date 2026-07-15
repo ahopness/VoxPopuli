@@ -6,6 +6,8 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dev.lucasangelo.voxpopuli.data.AppRepository
+import dev.lucasangelo.voxpopuli.data.datastore.Profile
+import dev.lucasangelo.voxpopuli.viewmodel.controller.ProfileController
 import dev.lucasangelo.voxpopuli.viewmodel.controller.SettingsController
 import dev.lucasangelo.voxpopuli.viewmodel.controller.SourcesController
 import javax.inject.Inject
@@ -17,6 +19,10 @@ class HomeViewModel @Inject constructor(
 ) : ViewModel() {
     private val settingsController = SettingsController(repository, viewModelScope)
     val settings = settingsController.settings
+
+    private val profileController = ProfileController(repository, viewModelScope)
+    val profile = profileController.profile
+    fun updateProfile(profile: Profile) = profileController.updateProfile(profile)
 
     private val sourcesController = SourcesController(repository, viewModelScope)
     val sources = sourcesController.sources

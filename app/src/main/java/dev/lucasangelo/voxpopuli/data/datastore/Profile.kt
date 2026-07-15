@@ -15,6 +15,7 @@ import java.io.OutputStream
 data class Profile(
     val ignoredCategories: List<SourceCategory> = SourceCategory.entries.toList(),
     val embedding: List<Float> = emptyList(),
+    val currentTabId: Int = 2,
 )
 
 object ProfileSerializer : Serializer<Profile> {
