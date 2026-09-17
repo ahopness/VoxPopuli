@@ -38,10 +38,10 @@ fun HomeScreen(
     Box(Modifier.fillMaxSize()) {
         val settings by viewModel.settings.collectAsStateWithLifecycle()
         val profile by viewModel.profile.collectAsStateWithLifecycle()
+        val sources by viewModel.sources.collectAsStateWithLifecycle()
 
         if(profile == null || settings == null) return
-
-        val sources by viewModel.sources.collectAsStateWithLifecycle()
+        if (settings!!.tabSelection == TabSelection.SOURCES && sources == null) return
 
         val standardTabList = remember {
             listOf(
@@ -82,7 +82,7 @@ fun HomeScreen(
             ) }
         }
         val sourceTabList = remember(sources) {
-            sources.map { HomeTabItem(
+            sources!!.map { HomeTabItem(
                 id = "source_${it.id}",
                 icon = it.logoUrl,
                 title = it.name,

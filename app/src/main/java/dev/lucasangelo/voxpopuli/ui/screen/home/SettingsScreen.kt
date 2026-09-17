@@ -75,8 +75,8 @@ fun SettingsScreen(
     if (settings == null) return
     val profile by viewModel.profile.collectAsStateWithLifecycle()
     if (profile == null) return
-
     val sources by viewModel.sources.collectAsStateWithLifecycle()
+    if (sources == null) return
 
     val listState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
@@ -123,7 +123,7 @@ fun SettingsScreen(
             item { Spacer(Modifier.height(16.dp)) }
             item { Text(stringResource(R.string.settings_sources_title)) }
 
-            items(sources, key = { it.id }) { source ->
+            items(sources!!, key = { it.id }) { source ->
                 SettingsSource(
                     source,
                     onSourceUpdateRequest = {

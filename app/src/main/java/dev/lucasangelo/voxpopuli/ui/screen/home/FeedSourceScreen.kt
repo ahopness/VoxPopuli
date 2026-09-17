@@ -33,7 +33,8 @@ fun FeedSourceScreen(
     val errorMessage by viewModel.errorMessage.collectAsStateWithLifecycle()
 
     val sources by viewModel.sources.collectAsStateWithLifecycle()
-    val sourcesMap = remember(sources) { sources.associateBy { it.id } }
+    if (sources == null) return
+    val sourcesMap = remember(sources) { sources!!.associateBy { it.id } }
 
     val feed by viewModel.feed.collectAsStateWithLifecycle()
 

@@ -12,11 +12,11 @@ class SourcesController(
     private val repository: AppRepository,
     private val scope: CoroutineScope,
 ) {
-    val sources: StateFlow<List<SourceEntity>> = repository.getAllSources()
+    val sources: StateFlow<List<SourceEntity>?> = repository.getAllSources()
         .stateIn(
             scope = scope,
             started = SharingStarted.WhileSubscribed(5000),
-            initialValue = emptyList()
+            initialValue = null
         )
 
     fun insertSource(source: SourceEntity) = scope.launch { repository.insertSource(source) }
