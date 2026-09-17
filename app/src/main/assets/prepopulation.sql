@@ -45,11 +45,12 @@ INSERT INTO `SourceEntity` (`name`, `logoUrl`, `category`, `feedUrl`, `lastFetch
 ('Wall Street Journal (World)', 'https://upload.wikimedia.org/wikipedia/commons/4/4a/WSJ_Logo.svg', 'GENERAL', 'https://feeds.content.dowjones.io/public/rss/RSSWorldNews', '0', '0'),
 
 -- 2. ENTERTAINMENT
-('Variety', 'https://upload.wikimedia.org/wikipedia/commons/c/ca/Variety_logo.svg', 'ENTERTAINMENT', 'https://feeds.feedburner.com/ign/all', '0', '0'),
+('Variety', 'https://upload.wikimedia.org/wikipedia/commons/c/ca/Variety_logo.svg', 'ENTERTAINMENT', 'https://variety.com/feed/', '0', '0'),
 ('IndieWire', 'https://upload.wikimedia.org/wikipedia/commons/8/83/IndieWire_logo_2016.png', 'ENTERTAINMENT', 'https://www.indiewire.com/feed', '0', '0'),
 ('Pitchfork', 'https://upload.wikimedia.org/wikipedia/commons/7/76/Pitchfork_logo.svg', 'ENTERTAINMENT', 'https://pitchfork.com/rss/news', '0', '0'),
 
 -- 3. GAMING
+('IGN', 'https://upload.wikimedia.org/wikipedia/commons/4/47/IGN_logo.svg', 'GAMING', 'https://feeds.feedburner.com/ign/all', '0', '0'),
 ('Rock Paper Shotgun', 'https://upload.wikimedia.org/wikipedia/en/4/49/Rock%2C_Paper%2C_Shotgun.svg', 'GAMING', 'https://feeds.feedburner.com/RockPaperShotgun', '0', '0'),
 ('Kotaku', 'https://upload.wikimedia.org/wikipedia/commons/2/28/Kotaku_logo.svg', 'GAMING', 'https://kotaku.com/rss', '0', '0'),
 ('Polygon', 'https://upload.wikimedia.org/wikipedia/commons/b/b4/Polygon_logo_%282024%29.svg', 'GAMING', 'https://www.polygon.com/feed/news/', '0', '0'),
