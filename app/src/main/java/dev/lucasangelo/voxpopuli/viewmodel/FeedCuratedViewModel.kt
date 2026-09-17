@@ -7,6 +7,7 @@ import dev.lucasangelo.voxpopuli.data.AppRepository
 import dev.lucasangelo.voxpopuli.data.room.PostEntity
 import dev.lucasangelo.voxpopuli.util.cosineSimilarity
 import dev.lucasangelo.voxpopuli.viewmodel.controller.FeedController
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
@@ -18,6 +19,8 @@ import javax.inject.Inject
 class FeedCuratedViewModel @Inject constructor(
     private val repository: AppRepository
 ) : ViewModel() {
+    private val activeEmbedding = MutableStateFlow<List<Float>?>(null)
+
     private val feedController = FeedController(
         repository,
         viewModelScope,
@@ -33,9 +36,11 @@ class FeedCuratedViewModel @Inject constructor(
         feed = combine(
             repository.getAllPosts(),
             repository.profile,
-            repository.getAllSources()
-        ) { posts, profile, sources ->
+            repository.getAllSources(),
+            activeEmbedding
+        ) { posts, profile, sources, activeEmb ->
             val sourcesMap = sources.associateBy { it.id }
+            val targetEmbedding = activeEmb?.takeIf { it.isNotEmpty() } ?: profile.embedding
 
             posts
                 .filterNot { post ->
@@ -44,7 +49,7 @@ class FeedCuratedViewModel @Inject constructor(
                 }
                 .sortedWith( comparator =
                     compareByDescending<PostEntity> {
-                        it.embedding.cosineSimilarity(to = profile.embedding)
+                        it.embedding.cosineSimilarity(to = targetEmbedding)
                     }.thenByDescending {
                         it.publishedAt
                     }
@@ -63,9 +68,16 @@ class FeedCuratedViewModel @Inject constructor(
     val isLoading = feedController.isLoading.asStateFlow()
     val loadingProgress = feedController.loadingProgress.asStateFlow()
     val errorMessage = feedController.errorMessage.asStateFlow()
-    fun requestFeedUpdate(debounced: Boolean = true) = feedController.requestFeedUpdate(debounced)
+    fun requestFeedUpdate(debounced: Boolean = true) {
+        activeEmbedding.value = null
+        feedController.requestFeedUpdate(debounced)
+    }
     init { requestFeedUpdate() }
 
-    fun updateProfileEmbedding(post: PostEntity) = feedController.updateProfileEmbedding(post)
+    fun onPostInteracted(post: PostEntity) {
+        if (post.embedding.isNotEmpty()) {
+            activeEmbedding.value = post.embedding
+        }
+    }
     fun bookmarkPost(post: PostEntity) = feedController.bookmarkPost(post)
 }

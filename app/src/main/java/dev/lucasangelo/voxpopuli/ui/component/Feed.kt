@@ -37,7 +37,7 @@ fun Feed(
     listState: LazyListState,
     sources: Map<Long, SourceEntity>,
     onRequestFeedUpdate: (Boolean) -> Unit,
-    onPostInteracted: (PostEntity) -> Unit,
+    onPostInteracted: (PostEntity) -> Unit = {},
     onPostBookmarked: (PostEntity) -> Unit,
 ) {
     CleanScaffold(

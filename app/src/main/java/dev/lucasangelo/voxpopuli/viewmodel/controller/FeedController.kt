@@ -9,7 +9,6 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Semaphore
@@ -60,23 +59,6 @@ class FeedController(
             loadingProgress.value = 0
         }
     } }
-
-    fun updateProfileEmbedding(post: PostEntity) = scope.launch {
-        val profile = repository.profile.first()
-
-        val alpha = 0.2f
-
-        val newEmbedding =
-            if (profile.embedding.isEmpty()) {
-                post.embedding
-            } else {
-                val u = profile.embedding.map { it * (1f - alpha) }
-                val v = post.embedding.map { it * alpha }
-                u.zip(v) { a, b -> a + b }
-            }
-
-        repository.updateProfile(profile.copy(embedding = newEmbedding))
-    }
 
     fun bookmarkPost(post: PostEntity) = scope.launch {
         repository.updatePost(post.copy(bookmarked = !post.bookmarked))

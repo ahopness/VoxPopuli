@@ -6,6 +6,7 @@ import dev.lucasangelo.voxpopuli.data.AppRepository
 import dev.lucasangelo.voxpopuli.data.datastore.Profile
 import dev.lucasangelo.voxpopuli.data.room.SourceCategory
 import dev.lucasangelo.voxpopuli.data.room.sourceCategoryInfo
+import dev.lucasangelo.voxpopuli.util.normalize
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -38,7 +39,7 @@ class EmbeddingController (
                 val sum = categoryEmbeddings.reduce { acc, list ->
                     acc.zip(list) { a, b -> a + b }
                 }
-                sum.map { it / count }
+                sum.map { it / count }.normalize()
             } else {
                 emptyList()
             }

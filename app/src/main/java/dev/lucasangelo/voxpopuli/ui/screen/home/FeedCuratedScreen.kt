@@ -52,7 +52,10 @@ fun FeedCuratedScreen(
         listState,
         sourcesMap,
         onRequestFeedUpdate = { viewModel.requestFeedUpdate(it) },
-        onPostInteracted = { viewModel.updateProfileEmbedding(it) },
+        onPostInteracted = {
+            viewModel.onPostInteracted(it)
+            coroutineScope.launch { listState.scrollToItem(0) }
+        },
         onPostBookmarked = { viewModel.bookmarkPost(it) }
     )
 }

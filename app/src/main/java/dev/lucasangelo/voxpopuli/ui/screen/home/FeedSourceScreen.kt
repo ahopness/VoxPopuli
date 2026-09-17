@@ -57,7 +57,6 @@ fun FeedSourceScreen(
         listState,
         sourcesMap,
         onRequestFeedUpdate = { viewModel.requestFeedUpdate(it) },
-        onPostInteracted = { viewModel.updateProfileEmbedding(it) },
         onPostBookmarked = { viewModel.bookmarkPost(it) }
     )
 }

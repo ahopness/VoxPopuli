@@ -53,6 +53,5 @@ class FeedCategoryViewModel @AssistedInject constructor(
     fun requestFeedUpdate(debounced: Boolean = true) = feedController.requestFeedUpdate(debounced)
     init { requestFeedUpdate() }
 
-    fun updateProfileEmbedding(post: PostEntity) = feedController.updateProfileEmbedding(post)
     fun bookmarkPost(post: PostEntity) = feedController.bookmarkPost(post)
 }

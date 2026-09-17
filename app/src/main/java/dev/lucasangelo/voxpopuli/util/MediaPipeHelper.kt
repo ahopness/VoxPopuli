@@ -19,3 +19,13 @@ fun List<Float>.cosineSimilarity(to: List<Float>): Double {
 
     return if (normA == 0.0 || normB == 0.0) 0.0 else dotProduct / (sqrt(normA) * sqrt(normB))
 }
+
+fun List<Float>.normalize(): List<Float> {
+    if (this.isEmpty()) return this
+    var sum = 0.0
+    for (v in this) {
+        sum += v * v
+    }
+    val norm = sqrt(sum).toFloat()
+    return if (norm == 0f) this else this.map { it / norm }
+}

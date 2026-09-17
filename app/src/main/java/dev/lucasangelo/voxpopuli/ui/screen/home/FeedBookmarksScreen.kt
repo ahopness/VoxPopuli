@@ -52,7 +52,6 @@ fun FeedBookmarksScreen(
         listState,
         sourcesMap,
         onRequestFeedUpdate = { viewModel.requestFeedUpdate(it) },
-        onPostInteracted = { viewModel.updateProfileEmbedding(it) },
         onPostBookmarked = { viewModel.bookmarkPost(it) }
     )
 }
