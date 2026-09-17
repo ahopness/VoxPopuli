@@ -64,7 +64,7 @@ class FeedController(
     fun updateProfileEmbedding(post: PostEntity) = scope.launch {
         val profile = repository.profile.first()
 
-        val alpha = 0.1f
+        val alpha = 0.2f
 
         val newEmbedding =
             if (profile.embedding.isEmpty()) {

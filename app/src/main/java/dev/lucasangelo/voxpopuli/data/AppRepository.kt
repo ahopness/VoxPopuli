@@ -117,14 +117,14 @@ class AppRepository @Inject constructor(
                                         Instant.now()
                                     }
 
-                                val embedding = embedderMutex.withLock {
-                                    textEmbedder.embed(item.title)
+                                val embedding = runCatching { embedderMutex.withLock {
+                                    textEmbedder.embed(item.title.ifBlank { item.description })
                                         .embeddingResult()
                                         .embeddings()
-                                        .first()
-                                        .floatEmbedding()
-                                        .toList()
-                                }
+                                        .firstOrNull()
+                                        ?.floatEmbedding()
+                                        ?.toList()
+                                } }.getOrNull() ?: emptyList()
 
                                 PostEntity(
                                     id,

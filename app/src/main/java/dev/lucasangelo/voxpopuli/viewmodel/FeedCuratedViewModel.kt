@@ -42,9 +42,13 @@ class FeedCuratedViewModel @Inject constructor(
                     val source = sourcesMap[post.sourceId]
                     source != null && profile.ignoredCategories.contains(source.category)
                 }
-                .sortedByDescending { post ->
-                    post.embedding.cosineSimilarity(to = profile.embedding)
-                }
+                .sortedWith( comparator =
+                    compareByDescending<PostEntity> {
+                        it.embedding.cosineSimilarity(to = profile.embedding)
+                    }.thenByDescending {
+                        it.publishedAt
+                    }
+                )
         }
         .stateIn(
             scope = viewModelScope,

@@ -24,10 +24,10 @@ object MediaPipeModule {
             TextEmbedder.TextEmbedderOptions.builder()
                 .setBaseOptions(
                     BaseOptions.builder()
-                        .setDelegate(Delegate.CPU)
                         .setModelAssetPath("universal_sentence_encoder.tflite")
                         .build()
                 )
+                .setL2Normalize(true)
                 .build()
         )
     }
