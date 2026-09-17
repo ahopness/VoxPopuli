@@ -218,7 +218,7 @@ fun SettingsChangeTabSelection(
     }
 
     val coroutineScope = rememberCoroutineScope()
-    val sheetState = rememberModalBottomSheetState()
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val onDismissRequest: () -> Unit = {
         coroutineScope.launch {
             sheetState.hide()
@@ -297,7 +297,7 @@ fun SettingsRetuneRecommendations(
     }
 
     val coroutineScope = rememberCoroutineScope()
-    val sheetState = rememberModalBottomSheetState()
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val onDismissRequest: () -> Unit = {
         coroutineScope.launch {
             sheetState.hide()
@@ -407,7 +407,7 @@ fun SettingsSource(
     }
 
     val coroutineScope = rememberCoroutineScope()
-    val sheetState = rememberModalBottomSheetState()
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val onDismissRequest: () -> Unit = {
         coroutineScope.launch {
             sheetState.hide()
@@ -452,7 +452,7 @@ fun SettingsNewSourceButton(
     }
 
     val coroutineScope = rememberCoroutineScope()
-    val sheetState = rememberModalBottomSheetState()
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val onDismissRequest: () -> Unit = {
         coroutineScope.launch {
             sheetState.hide()
@@ -671,7 +671,7 @@ fun SettingsSelectCategoryButton(
     }
 
     val coroutineScope = rememberCoroutineScope()
-    val sheetState = rememberModalBottomSheetState()
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val onDismissRequest: () -> Unit = {
         coroutineScope.launch {
             sheetState.hide()
