@@ -51,6 +51,8 @@ class AppRepository @Inject constructor(
         profileDataStore.data
     suspend fun updateProfile(profile: Profile) =
         profileDataStore.updateData { profile }
+    suspend fun updateCurrentTabId(tabId: Int) =
+        profileDataStore.updateData { it.copy(currentTabId = tabId) }
 
     suspend fun insertSource(source: SourceEntity) =
         dao.insertSource(source)

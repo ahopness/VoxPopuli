@@ -22,4 +22,8 @@ class ProfileController(
     fun updateProfile(profile: Profile) = scope.launch {
         repository.updateProfile(profile)
     }
+
+    fun updateCurrentTabId(tabId: Int) = scope.launch {
+        repository.updateCurrentTabId(tabId)
+    }
 }

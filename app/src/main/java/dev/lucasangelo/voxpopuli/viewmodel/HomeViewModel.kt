@@ -23,6 +23,7 @@ class HomeViewModel @Inject constructor(
     private val profileController = ProfileController(repository, viewModelScope)
     val profile = profileController.profile
     fun updateProfile(profile: Profile) = profileController.updateProfile(profile)
+    fun updateCurrentTabId(tabId: Int) = profileController.updateCurrentTabId(tabId)
 
     private val sourcesController = SourcesController(repository, viewModelScope)
     val sources = sourcesController.sources

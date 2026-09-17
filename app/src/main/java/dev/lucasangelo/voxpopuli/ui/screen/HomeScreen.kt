@@ -114,9 +114,7 @@ fun HomeScreen(
         val coroutineScope = rememberCoroutineScope()
 
         LaunchedEffect(pagerState.settledPage) {
-            viewModel.updateProfile(profile!!.copy(
-                currentTabId = pagerState.settledPage
-            ))
+            viewModel.updateCurrentTabId(pagerState.settledPage)
         }
 
         FloatingNavigationBar(
