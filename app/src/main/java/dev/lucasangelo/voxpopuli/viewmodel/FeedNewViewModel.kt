@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.lucasangelo.voxpopuli.data.AppRepository
 import dev.lucasangelo.voxpopuli.data.room.PostEntity
-import dev.lucasangelo.voxpopuli.util.cosineSimilarity
 import dev.lucasangelo.voxpopuli.viewmodel.controller.FeedController
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
@@ -43,7 +42,7 @@ class FeedNewViewModel @Inject constructor(
                     source != null && profile.ignoredCategories.contains(source.category)
                 }
                 .sortedByDescending { post ->
-                    post.embedding.cosineSimilarity(to = profile.embedding)
+                    post.publishedAt
                 }
         }
         .stateIn(
