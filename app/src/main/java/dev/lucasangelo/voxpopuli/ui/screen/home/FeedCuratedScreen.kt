@@ -64,7 +64,7 @@ fun FeedCuratedScreen(
         onPostBookmarked = { viewModel.bookmarkPost(it) },
         description =
             if (focusedPost != null)
-                "Posts akin to\n" +
+                stringResource(R.string.showing_posts_akin_to) + "\n" +
                 "\"" + focusedPost!!.title + "\""
             else
                 null,

@@ -3,6 +3,7 @@ package dev.lucasangelo.voxpopuli.ui.component
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -21,6 +22,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.paint
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.buildAnnotatedString
@@ -82,20 +84,7 @@ fun Feed(
             ) {
                 item { Spacer(Modifier.height(floatingExtendedTopBarPadding + 16.dp)) }
 
-                if (description != null)
-                    item {
-                        Text(
-                            text = description,
-                            color = Color.Gray,
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier
-                                .padding(horizontal = 48.dp)
-                                .padding(bottom = 64.dp)
-                                .fillMaxWidth()
-                        )
-                    }
-
-                if (isLoading)
+                if (isLoading) {
                     item {
                         Text(
                             text = buildAnnotatedString {
@@ -112,7 +101,7 @@ fun Feed(
                                 .fillMaxWidth(),
                         )
                     }
-                else if (errorMessage != null)
+                } else if (errorMessage != null) {
                     item {
                         Text(
                             text = buildAnnotatedString {
@@ -127,7 +116,7 @@ fun Feed(
                                 .fillMaxWidth(),
                         )
                     }
-                else if (feed.isEmpty())
+                } else if (feed.isEmpty()) {
                     item {
                         Text(
                             text = stringResource(R.string.feed_empty),
@@ -139,7 +128,20 @@ fun Feed(
                                 .fillMaxWidth(),
                         )
                     }
-                else
+                } else {
+                    if (description != null)
+                        item {
+                            Text(
+                                text = description,
+                                color = Color.Gray,
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier
+                                    .padding(horizontal = 48.dp)
+                                    .padding(bottom = 64.dp)
+                                    .fillMaxWidth()
+                            )
+                        }
+
                     items(feed, key = { it.id }) { post ->
                         val source = sources[post.sourceId] ?: return@items //NOTE: causes NullPointerException sometimes, idk why, prob race condition
                         Post(
@@ -160,7 +162,7 @@ fun Feed(
                             }
                         )
                     }
-
+                }
 
                 item { Spacer(Modifier.height(floatingNavigationBarPadding + 32.dp)) }
             }

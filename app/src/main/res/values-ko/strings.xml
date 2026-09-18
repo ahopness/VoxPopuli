@@ -52,4 +52,5 @@
     <string name="settings_sources_edit_feedurl">RSS 피드 URL</string>
     <string name="settings_sources_edit_logourl">로고 URL</string>
     <string name="settings_sources_edit_name">이름</string>
+    <string name="showing_posts_akin_to">...와 유사한 뉴스 표시</string>
 </resources>

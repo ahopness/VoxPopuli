@@ -52,4 +52,5 @@
     <string name="settings_sources_edit_feedurl">RSS फ़ीड URL</string>
     <string name="settings_sources_edit_logourl">लोगो URL</string>
     <string name="settings_sources_edit_name">नाम</string>
+    <string name="showing_posts_akin_to">इससे मिलती-जुलती खबरें दिखाई जा रही हैं...</string>
 </resources>

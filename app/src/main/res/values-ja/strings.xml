@@ -52,4 +52,5 @@
     <string name="settings_sources_edit_feedurl">RSSフィードのURL</string>
     <string name="settings_sources_edit_logourl">ロゴのURL</string>
     <string name="settings_sources_edit_name">名前</string>
+    <string name="showing_posts_akin_to">～に類似したニュースを表示しています...</string>
 </resources>

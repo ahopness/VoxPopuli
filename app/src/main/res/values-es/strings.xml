@@ -52,4 +52,5 @@
     <string name="settings_sources_edit_feedurl">URL del feed RSS</string>
     <string name="settings_sources_edit_name">Nombre</string>
     <string name="settings_sources_edit_logourl">URL del logotipo</string>
+    <string name="showing_posts_akin_to">Mostrando noticias similares a...</string>
 </resources>
