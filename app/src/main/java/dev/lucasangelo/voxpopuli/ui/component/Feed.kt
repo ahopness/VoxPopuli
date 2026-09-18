@@ -12,9 +12,13 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults.Indicator
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -56,10 +60,20 @@ fun Feed(
             )*/
         ) }
     ) {
-        // TODO: Change colors
+        val refreshState = rememberPullToRefreshState()
         PullToRefreshBox(
             isRefreshing = isLoading,
-            onRefresh = { onRequestFeedUpdate(false) }
+            onRefresh = { onRequestFeedUpdate(false) },
+            state = refreshState,
+            indicator = {
+                Indicator(
+                    modifier = Modifier.align(Alignment.TopCenter),
+                    isRefreshing = isLoading,
+                    containerColor = MaterialTheme.colorScheme.onSurface,
+                    color = MaterialTheme.colorScheme.primaryContainer,
+                    state = refreshState
+                )
+            }
         ) {
             LazyColumn(
                 state = listState,
