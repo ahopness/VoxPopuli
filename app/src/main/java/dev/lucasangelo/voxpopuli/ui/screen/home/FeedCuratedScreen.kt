@@ -5,8 +5,10 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -35,6 +37,8 @@ fun FeedCuratedScreen(
 
     val feed by viewModel.feed.collectAsStateWithLifecycle()
 
+    val focusedPost by viewModel.focusedPost.collectAsStateWithLifecycle()
+
     Feed(
         topBarTitle = stringResource(R.string.feed_curated),
         topBarIconContent = { modifier, _ ->
@@ -57,6 +61,12 @@ fun FeedCuratedScreen(
             viewModel.onPostInteracted(it)
             coroutineScope.launch { listState.scrollToItem(0) }
         },
-        onPostBookmarked = { viewModel.bookmarkPost(it) }
+        onPostBookmarked = { viewModel.bookmarkPost(it) },
+        description =
+            if (focusedPost != null)
+                "Posts akin to\n" +
+                "\"" + focusedPost!!.title + "\""
+            else
+                null,
     )
 }

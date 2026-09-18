@@ -19,7 +19,7 @@ import javax.inject.Inject
 class FeedCuratedViewModel @Inject constructor(
     private val repository: AppRepository
 ) : ViewModel() {
-    private val activeEmbedding = MutableStateFlow<List<Float>?>(null)
+    val focusedPost = MutableStateFlow<PostEntity?>(null)
 
     private val feedController = FeedController(
         repository,
@@ -37,10 +37,10 @@ class FeedCuratedViewModel @Inject constructor(
             repository.getAllPosts(),
             repository.profile,
             repository.getAllSources(),
-            activeEmbedding
-        ) { posts, profile, sources, activeEmb ->
+            focusedPost
+        ) { posts, profile, sources, currentFocusedPost ->
             val sourcesMap = sources.associateBy { it.id }
-            val targetEmbedding = activeEmb?.takeIf { it.isNotEmpty() } ?: profile.embedding
+            val targetEmbedding = currentFocusedPost?.embedding ?: profile.embedding
 
             posts
                 .filterNot { post ->
@@ -69,14 +69,14 @@ class FeedCuratedViewModel @Inject constructor(
     val loadingProgress = feedController.loadingProgress.asStateFlow()
     val errorMessage = feedController.errorMessage.asStateFlow()
     fun requestFeedUpdate(debounced: Boolean = true) {
-        activeEmbedding.value = null
+        focusedPost.value = null
         feedController.requestFeedUpdate(debounced)
     }
     init { requestFeedUpdate() }
 
     fun onPostInteracted(post: PostEntity) {
         if (post.embedding.isNotEmpty()) {
-            activeEmbedding.value = post.embedding
+            focusedPost.value = post
         }
     }
     fun bookmarkPost(post: PostEntity) = feedController.bookmarkPost(post)

@@ -39,6 +39,7 @@ fun Feed(
     onRequestFeedUpdate: (Boolean) -> Unit,
     onPostInteracted: (PostEntity) -> Unit = {},
     onPostBookmarked: (PostEntity) -> Unit,
+    description: String? = null,
 ) {
     CleanScaffold(
         topBar = { FloatingExtendedTopBar(
@@ -55,6 +56,7 @@ fun Feed(
             )*/
         ) }
     ) {
+        // TODO: Change colors
         PullToRefreshBox(
             isRefreshing = isLoading,
             onRefresh = { onRequestFeedUpdate(false) }
@@ -65,6 +67,19 @@ fun Feed(
                 modifier = Modifier.fillMaxSize(),
             ) {
                 item { Spacer(Modifier.height(floatingExtendedTopBarPadding + 16.dp)) }
+
+                if (description != null)
+                    item {
+                        Text(
+                            text = description,
+                            color = Color.Gray,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier
+                                .padding(horizontal = 48.dp)
+                                .padding(bottom = 64.dp)
+                                .fillMaxWidth()
+                        )
+                    }
 
                 if (isLoading)
                     item {
