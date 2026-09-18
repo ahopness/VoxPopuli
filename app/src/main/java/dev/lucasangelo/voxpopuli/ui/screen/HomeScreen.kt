@@ -40,8 +40,7 @@ fun HomeScreen(
         val profile by viewModel.profile.collectAsStateWithLifecycle()
         val sources by viewModel.sources.collectAsStateWithLifecycle()
 
-        if(profile == null || settings == null) return
-        if (settings!!.tabSelection == TabSelection.SOURCES && sources == null) return
+        if(profile == null || settings == null || sources == null) return
 
         val standardTabList = remember {
             listOf(
