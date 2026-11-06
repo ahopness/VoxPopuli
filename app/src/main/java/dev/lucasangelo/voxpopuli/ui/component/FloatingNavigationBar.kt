@@ -1,7 +1,8 @@
 package dev.lucasangelo.voxpopuli.ui.component
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -12,28 +13,26 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import dev.lucasangelo.voxpopuli.ui.overlayTransparencyColor
 
@@ -76,8 +75,14 @@ fun BoxScope.FloatingNavigationBar(
         ) {
             val listState = rememberLazyListState()
 
-            LaunchedEffect(selectedIndex) {
-                listState.animateScrollToItem(selectedIndex+1, scrollOffset = -256)
+            val scrollOffsetPx = with(LocalDensity.current) {
+                (-96).dp.roundToPx()
+            }
+            LaunchedEffect(selectedIndex, scrollOffsetPx) {
+                listState.animateScrollToItem(
+                    index = selectedIndex + 1,
+                    scrollOffset = scrollOffsetPx
+                )
             }
 
             LazyRow(
@@ -92,7 +97,10 @@ fun BoxScope.FloatingNavigationBar(
             ) {
                 item { Spacer(Modifier.width(16.dp)) }
 
-                items(items) { item ->
+                items(
+                    items,
+                    key = { it.title.toString() }
+                ) { item ->
                     FloatingNavigationButton(
                         icon = item.icon,
                         title = item.title,
@@ -114,40 +122,45 @@ fun FloatingNavigationButton(
     showTitle: Boolean,
     onClick: () -> Unit,
 ) {
+    /* NOTE: really wanted this but the animation is super janky
+       TODO: refactor navigation bar animated focus scroll
+    val horizontalPadding by animateDpAsState(
+        targetValue = if (showTitle) 24.dp else 0.dp,
+        animationSpec = tween(durationMillis = 300, easing = FastOutSlowInEasing),
+    )
+     */
+
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
-            .animateContentSize()
-            .clickable(onClick = onClick),
+            .clickable(onClick = onClick)
+            .padding(horizontal = 8.dp)
     ) {
+        val topOffset by animateDpAsState(
+            targetValue = if (showTitle) (-12).dp else 0.dp,
+            animationSpec = tween(durationMillis = 300, easing = FastOutSlowInEasing),
+        )
+        val iconModifier = Modifier
+            .size(72.dp)
+            .offset {
+                IntOffset(x = 0, y = topOffset.roundToPx())
+            }
+
         when (icon) {
             is String ->
                 MonochromeAsyncImage(
                     model = icon,
                     contentDescription = null,
-                    modifier = Modifier.size(72.dp).scale(0.6f)
+                    modifier = iconModifier.scale(0.6f)
+
                 )
             is Int ->
                 Icon(
                     painter = painterResource(icon),
                     contentDescription = null,
-                    modifier = Modifier.size(72.dp)
+                    modifier = iconModifier
                 )
             else -> {}
-        }
-        AnimatedVisibility(showTitle) {
-            Text(
-                text =
-                    when (title) {
-                        is String -> title
-                        is Int -> stringResource(title)
-                        else -> ""
-                    },
-                textAlign = TextAlign.Center,
-                fontFamily = FontFamily.Monospace,
-                style = MaterialTheme.typography.titleSmall,
-                modifier = Modifier.widthIn(max = 120.dp)
-            )
         }
     }
 }
