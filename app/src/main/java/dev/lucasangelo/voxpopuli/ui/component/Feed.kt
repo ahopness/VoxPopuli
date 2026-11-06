@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
@@ -28,6 +29,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import dev.lucasangelo.voxpopuli.R
 import dev.lucasangelo.voxpopuli.data.room.PostEntity
 import dev.lucasangelo.voxpopuli.data.room.SourceEntity
@@ -47,8 +49,11 @@ fun Feed(
     onPostBookmarked: (PostEntity) -> Unit,
     description: String? = null,
 ) {
+    val refreshState = rememberPullToRefreshState()
+
     CleanScaffold(
-        topBar = { FloatingExtendedTopBar(
+        topBar = {
+            FloatingExtendedTopBar(
             listState = listState,
             canGoBack = false,
             title = topBarTitle,
@@ -60,22 +65,23 @@ fun Feed(
                     onClick = { /* TODO: Edit feed button */ }
                 )
             )*/
-        ) }
+            )
+            Indicator(
+                modifier = Modifier
+                    .align(Alignment.TopCenter)
+                    .safeDrawingPadding(),
+                isRefreshing = isLoading,
+                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                color = MaterialTheme.colorScheme.onSurface,
+                state = refreshState
+            )
+        }
     ) {
-        val refreshState = rememberPullToRefreshState()
         PullToRefreshBox(
             isRefreshing = isLoading,
             onRefresh = { onRequestFeedUpdate(false) },
             state = refreshState,
-            indicator = {
-                Indicator(
-                    modifier = Modifier.align(Alignment.TopCenter),
-                    isRefreshing = isLoading,
-                    containerColor = MaterialTheme.colorScheme.onSurface,
-                    color = MaterialTheme.colorScheme.primaryContainer,
-                    state = refreshState
-                )
-            }
+            indicator = {}
         ) {
             LazyColumn(
                 state = listState,
