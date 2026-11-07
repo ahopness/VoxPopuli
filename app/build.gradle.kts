@@ -57,6 +57,8 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     debugImplementation(libs.androidx.compose.ui.tooling)
 
+    implementation(libs.compose.shimmer)
+
     implementation(libs.kotlinx.serialization.json)
 
     implementation(libs.stax.api)

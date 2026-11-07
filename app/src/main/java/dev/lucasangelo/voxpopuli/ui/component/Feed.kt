@@ -1,6 +1,7 @@
 package dev.lucasangelo.voxpopuli.ui.component
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
@@ -30,6 +32,7 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import com.valentinilk.shimmer.shimmer
 import dev.lucasangelo.voxpopuli.R
 import dev.lucasangelo.voxpopuli.data.room.PostEntity
 import dev.lucasangelo.voxpopuli.data.room.SourceEntity
@@ -91,20 +94,15 @@ fun Feed(
                 item { Spacer(Modifier.height(floatingExtendedTopBarPadding + 16.dp)) }
 
                 if (isLoading) {
-                    item {
-                        Text(
-                            text = buildAnnotatedString {
-                                appendLine(stringResource(R.string.loading))
-                                append(loadingProgress.toString()); append(" ")
-                                append(stringResource(R.string.fetched))
-
-                            },
-                            color = Color.Gray,
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier
-                                .padding(horizontal = 48.dp)
-                                .padding(top = 128.dp)
-                                .fillMaxWidth(),
+                    items(loadingProgress) {
+                        Box(
+                            Modifier
+                                .padding(horizontal = 12.dp)
+                                .clip(RoundedCornerShape(6.dp))
+                                .shimmer()
+                                .fillMaxWidth()
+                                .height(180.dp)
+                                .background(Color.Gray.copy(alpha = 0.5f))
                         )
                     }
                 } else if (errorMessage != null) {
