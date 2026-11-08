@@ -19,13 +19,14 @@ android {
         applicationId = "dev.lucasangelo.voxpopuli"
         minSdk = 26
         targetSdk = 36
-        versionCode = 8
-        versionName = "v1.2rev0"
+        versionCode = 9
+        versionName = "v1.2rev1"
     }
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
