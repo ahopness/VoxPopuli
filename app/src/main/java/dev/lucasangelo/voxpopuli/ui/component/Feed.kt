@@ -94,7 +94,7 @@ fun Feed(
                 item { Spacer(Modifier.height(floatingExtendedTopBarPadding + 16.dp)) }
 
                 if (isLoading) {
-                    items(loadingProgress) {
+                    items(minOf(1, loadingProgress)) {
                         Box(
                             Modifier
                                 .padding(horizontal = 12.dp)
