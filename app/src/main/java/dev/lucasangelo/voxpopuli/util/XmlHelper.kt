@@ -2,11 +2,11 @@ package dev.lucasangelo.voxpopuli.util
 
 import dev.lucasangelo.voxpopuli.data.okhttp.Rss
 import java.io.StringReader
-import javax.xml.stream.XMLInputFactory
+import com.ctc.wstx.stax.WstxInputFactory
 import javax.xml.stream.XMLStreamConstants
 
 fun parseRss(xml: String): Rss {
-    val factory = XMLInputFactory.newInstance()
+    val factory = WstxInputFactory()
     val reader = factory.createXMLStreamReader(StringReader(xml))
 
     val path = mutableListOf<String>()
