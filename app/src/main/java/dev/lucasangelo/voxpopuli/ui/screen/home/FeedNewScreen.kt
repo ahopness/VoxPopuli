@@ -47,6 +47,7 @@ fun FeedNewScreen(
             )
         },
         isLoading,
+        progressiveLoadingIndicator = true,
         loadingProgress,
         errorMessage,
         feed,

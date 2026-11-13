@@ -52,6 +52,7 @@ fun FeedCategoryScreen(
             )
         },
         isLoading,
+        progressiveLoadingIndicator = true,
         loadingProgress,
         errorMessage,
         feed,

@@ -42,6 +42,7 @@ fun Feed(
     topBarTitle: String,
     topBarIconContent: @Composable (Modifier, () -> Float) -> Unit,
     isLoading: Boolean,
+    progressiveLoadingIndicator: Boolean,
     loadingProgress: Int,
     errorMessage: String?,
     feed: List<PostEntity>,
@@ -94,7 +95,12 @@ fun Feed(
                 item { Spacer(Modifier.height(floatingExtendedTopBarPadding + 16.dp)) }
 
                 if (isLoading) {
-                    items(loadingProgress+1) {
+                    items(count =
+                        if (progressiveLoadingIndicator)
+                            loadingProgress + 1
+                        else
+                            5
+                    ) {
                         Box(
                             Modifier
                                 .padding(horizontal = 12.dp)

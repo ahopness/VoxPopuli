@@ -52,6 +52,7 @@ fun FeedSourceScreen(
             )
         },
         isLoading,
+        progressiveLoadingIndicator = false,
         loadingProgress,
         errorMessage,
         feed,

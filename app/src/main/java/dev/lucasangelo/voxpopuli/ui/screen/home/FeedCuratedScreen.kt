@@ -51,6 +51,7 @@ fun FeedCuratedScreen(
             )
         },
         isLoading,
+        progressiveLoadingIndicator = true,
         loadingProgress,
         errorMessage,
         feed,

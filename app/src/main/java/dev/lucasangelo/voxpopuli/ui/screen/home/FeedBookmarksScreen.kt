@@ -47,6 +47,7 @@ fun FeedBookmarksScreen(
             )
         },
         isLoading,
+        progressiveLoadingIndicator = false,
         loadingProgress,
         errorMessage,
         feed,
